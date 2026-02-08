@@ -1,64 +1,48 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import Button from '@/components/ui/Button';
+import Link from 'next/link';
 
 const Header = () => {
   return (
-    <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-(--color-background)/80 backdrop-blur-lg border-b border-(--color-border)"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="container">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <motion.div
-            className="flex items-center gap-2"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-(--color-primary) to-(--color-accent) flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="text-xl font-bold text-(--color-text-primary)">Stepwise</span>
-          </motion.div>
+            <span className="text-lg font-semibold text-gray-900">Stepwise</span>
+          </Link>
 
-          {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-(--color-text-secondary) hover:text-(--color-text-primary) transition-colors">
+            <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-(--color-text-secondary) hover:text-(--color-text-primary) transition-colors">
+            <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               How it Works
             </a>
-            <a href="#pricing" className="text-(--color-text-secondary) hover:text-(--color-text-primary) transition-colors">
+            <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Pricing
             </a>
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden sm:inline-flex"
+          <div className="flex items-center gap-3">
+            <Link
+              href="/signin"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
               Login
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
+            </Link>
+            <Link
+              href="/signup"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
             >
               Sign Up
-            </Button>
+            </Link>
           </div>
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 };
 
