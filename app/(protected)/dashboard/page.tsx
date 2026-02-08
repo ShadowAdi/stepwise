@@ -282,10 +282,13 @@ export default function DashboardPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}`)}>
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/edit`)}>
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => router.push(`/demo/${demo.slug}`)}>
-                          View
+                          Preview
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleToggleVisibility(demo.id)}>
                           Make {demo.isPublic ? 'Private' : 'Public'}
