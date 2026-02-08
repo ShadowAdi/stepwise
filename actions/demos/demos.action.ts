@@ -241,14 +241,20 @@ export const getDemoById = async (
             }
         }
 
+        // Check if idOrSlug is a valid UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(idOrSlug);
+
         const [demo] = await db
             .select()
             .from(demos)
             .where(
-                or(
-                    eq(demos.id, idOrSlug),
-                    eq(demos.slug, idOrSlug)
-                )!
+                isUuid
+                    ? or(
+                        eq(demos.id, idOrSlug),
+                        eq(demos.slug, idOrSlug)
+                    )!
+                    : eq(demos.slug, idOrSlug)
             )
             .limit(1);
 
@@ -304,14 +310,20 @@ export const getDemoWithStepsCount = async (
             }
         }
 
+        // Check if idOrSlug is a valid UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(idOrSlug);
+
         const [demo] = await db
             .select()
             .from(demos)
             .where(
-                or(
-                    eq(demos.id, idOrSlug),
-                    eq(demos.slug, idOrSlug)
-                )!
+                isUuid
+                    ? or(
+                        eq(demos.id, idOrSlug),
+                        eq(demos.slug, idOrSlug)
+                    )!
+                    : eq(demos.slug, idOrSlug)
             )
             .limit(1);
 
