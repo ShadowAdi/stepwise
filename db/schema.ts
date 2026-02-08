@@ -54,3 +54,12 @@ export const hotspots = pgTable("hotspots", {
         .notNull()
         .$onUpdate(() => new Date()),
 })
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+export type InsertStep = typeof steps.$inferInsert;
+export type SelectStep = typeof steps.$inferSelect;
+export type InsertDemo = typeof demos.$inferInsert;
+export type SelectDemo = typeof demos.$inferSelect;
+export type InsertHotspots = typeof hotspots.$inferInsert;
+export type SelectHotspots = typeof hotspots.$inferSelect;
