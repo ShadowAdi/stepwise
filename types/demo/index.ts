@@ -11,7 +11,7 @@ export interface CreateDemoDTO {
   slug: string;
   description?: string;
   userId: string;
-  isPublic?: boolean;
+  isPublic: boolean;
 }
 
 export interface UpdateDemoDTO {
