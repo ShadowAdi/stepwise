@@ -4,7 +4,7 @@ import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
-export const getUserIdFromToken = (token: string): { success: true; userId: string } | { success: false; error: string } => {
+export const getUserIdFromToken =async (token: string): Promise<{ success: true; userId: string } | { success: false; error: string }> => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
         return { success: true, userId: decoded.id };

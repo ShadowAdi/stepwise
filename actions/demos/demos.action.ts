@@ -20,7 +20,7 @@ export const createDemo = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
@@ -85,7 +85,7 @@ export const getUserDemos = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
@@ -235,7 +235,7 @@ export const getDemoById = async (
         let userId: string | undefined;
 
         if (token) {
-            const authResult = getUserIdFromToken(token);
+            const authResult = await getUserIdFromToken(token);
             if (authResult.success) {
                 userId = authResult.userId;
             }
@@ -298,7 +298,7 @@ export const getDemoWithStepsCount = async (
         let userId: string | undefined;
 
         if (token) {
-            const authResult = getUserIdFromToken(token);
+            const authResult = await getUserIdFromToken(token);
             if (authResult.success) {
                 userId = authResult.userId;
             }
@@ -372,7 +372,7 @@ export const updateDemo = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
@@ -452,7 +452,7 @@ export const deleteDemo = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
@@ -515,7 +515,7 @@ export const toggleDemoVisibility = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
@@ -587,7 +587,7 @@ export const duplicateDemo = async (
             };
         }
 
-        const authResult = getUserIdFromToken(token);
+        const authResult = await getUserIdFromToken(token);
         if (!authResult.success) {
             return {
                 success: false,
