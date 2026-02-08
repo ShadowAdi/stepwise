@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="antialiased">
         <AuthProvider>
           {children}
-          <Toaster />
+          <Toaster richColors />
         </AuthProvider>
       </body>
     </html>
