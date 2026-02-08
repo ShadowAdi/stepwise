@@ -24,3 +24,16 @@ export const demos = pgTable("demos", {
         .notNull()
         .$onUpdate(() => new Date()),
 })
+
+export const steps = pgTable("steps", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    demoId: uuid("demoId").notNull().references(() => demos.id, { onDelete: "cascade" }),
+    title: text("title"),
+    description: text("description"),
+    imageUrl: text("image_url").notNull(),
+    position: text("position").notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at')
+        .notNull()
+        .$onUpdate(() => new Date()),
+})
