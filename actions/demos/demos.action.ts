@@ -1,11 +1,11 @@
 "use server"
 
 import { db } from "@/db";
-import { demos, users, steps } from "@/db/schema";
+import { demos, steps } from "@/db/schema";
 import { getUserIdFromToken } from "@/helper/get-user-from-id";
+import { ensureUniqueSlug, generateSlug } from "@/helper/slug.helper";
 import { ActionResponse, CreateDemoDTO, DemoQueryParams, DemoResponse, DemoListResponse, UpdateDemoDTO } from "@/types";
 import { eq, and, or, like, desc, asc, sql, count } from "drizzle-orm";
-import { nanoid } from "nanoid";
 
 
 export const createDemo = async (
@@ -35,7 +35,9 @@ export const createDemo = async (
             };
         }
 
-        const slug = nanoid(10);
+        // Generate a unique slug from title
+        const baseSlug = generateSlug(payload.title);
+        const slug = await ensureUniqueSlug(baseSlug, authResult.userId);
 
         const [demo] = await db.insert(demos).values({
             title: payload.title,
@@ -613,9 +615,12 @@ export const duplicateDemo = async (
             };
         }
 
-        const newSlug = nanoid(10);
+        // Generate slug from new title
+        const newTitle = `${originalDemo.title} (Copy)`;
+        const baseSlug = generateSlug(newTitle);
+        const newSlug = await ensureUniqueSlug(baseSlug, authResult.userId);
         const [duplicatedDemo] = await db.insert(demos).values({
-            title: `${originalDemo.title} (Copy)`,
+            title: newTitle,
             slug: newSlug,
             description: originalDemo.description,
             userId: authResult.userId,
