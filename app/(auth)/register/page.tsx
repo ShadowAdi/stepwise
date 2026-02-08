@@ -7,6 +7,10 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/Button"
+import { createUser } from "@/actions/user/user.action"
+import { useAuth } from "@/context/AuthContext"
+import { redirect } from "next/navigation"
+import { toast } from "sonner"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -17,6 +21,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
+  const { isAuthenticated, isLoading, register: registerAuth } = useAuth()
   const {
     register,
     handleSubmit,
@@ -25,9 +30,28 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   })
 
-  const onSubmit = async (data: RegisterFormData) => {
-    console.log(data)
-    // TODO: Implement registration logic
+  if (!isLoading && isAuthenticated) {
+    redirect("/dashboard")
+  }
+
+  const onSubmit = async (createUserData: RegisterFormData) => {
+    try {
+      const response = await createUser(createUserData)
+      if (response.success && response.data) {
+        registerAuth(response.data.token, response.data.user)
+        toast.success(`User registered successfully`)
+      } else {
+        toast.error(!response.success ? response.error : `Failed to register user`)
+        console.error(!response.success ? response.error : `Failed to register user`)
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred during registration. Please try again.'
+      )
+    }
   }
 
   return (
