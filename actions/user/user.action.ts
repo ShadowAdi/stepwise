@@ -1,7 +1,7 @@
 "use server"
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { ActionResponse, CreateUserDTO } from "@/types";
+import { ActionResponse, CreateUserDTO, UpdateUserDTO } from "@/types";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -29,7 +29,7 @@ export const createUser = async (payload: CreateUserDTO): Promise<ActionResponse
             .from(users)
             .where(eq(users.email, payload.email))
             .limit(1);
-        
+
         if (existingUser.length > 0) {
             return {
                 success: false,
@@ -72,7 +72,7 @@ export const createUser = async (payload: CreateUserDTO): Promise<ActionResponse
         };
     } catch (error) {
         console.error(`Failed to create user:`, error);
-        
+
         if (error instanceof Error) {
             if (error.message.includes("unique")) {
                 return {
@@ -141,7 +141,7 @@ export const loginUser = async (email: string, password: string): Promise<Action
                 email: user.email
             },
             JWT_SECRET,
-            { expiresIn: "7d" } 
+            { expiresIn: "7d" }
         );
 
         return {
@@ -236,6 +236,82 @@ export const getUserFromToken = async (token: string): Promise<ActionResponse<{
         return {
             success: false,
             error: "Failed to authenticate. Please login again"
+        };
+    }
+};
+
+export const updateUser = async (updateUserFields: UpdateUserDTO, token: string): Promise<ActionResponse<{
+    id: string;
+    name: string | null;
+    email: string;
+}>> => {
+    try {
+        if (!token) {
+            return {
+                success: false,
+                error: "Token is required"
+            };
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+
+        const [user] = await db
+            .select({
+                id: users.id,
+                name: users.name,
+                email: users.email,
+            })
+            .from(users)
+            .where(eq(users.id, decoded.id))
+            .limit(1);
+
+        if (!user) {
+            return {
+                success: false,
+                error: "User not found"
+            };
+        }
+
+        await db.update(users).set({
+            ...updateUserFields
+        }).where(eq(users.id, user.id)).returning({
+            id: users.id,
+            name: users.name,
+            email: users.email,
+            avatar_url: users.avatar_url
+        })
+
+        return {
+            success: true,
+            data: user
+        };
+    } catch (error) {
+        console.error(`Failed to get user from token:`, error);
+
+        if (error instanceof jwt.JsonWebTokenError) {
+            return {
+                success: false,
+                error: "Invalid token"
+            };
+        }
+
+        if (error instanceof jwt.TokenExpiredError) {
+            return {
+                success: false,
+                error: "Token has expired"
+            };
+        }
+
+        if (error instanceof Error && error.message.includes("connection")) {
+            return {
+                success: false,
+                error: "Database connection failed. Please try again later"
+            };
+        }
+
+        return {
+            success: false,
+            error: "Failed to update user. Please try again"
         };
     }
 };
