@@ -7,6 +7,10 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/Button"
+import { loginUser } from "@/actions/user/user.action"
+import { useAuth } from "@/context/AuthContext"
+import { toast } from "sonner"
+import { redirect } from "next/navigation"
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -16,6 +20,8 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+  const { isAuthenticated, isLoading, login: loginAuth } = useAuth()
+
   const {
     register,
     handleSubmit,
@@ -24,9 +30,28 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    console.log(data)
-    // TODO: Implement login logic
+  if (!isLoading && isAuthenticated) {
+    redirect("/dashboard")
+  }
+
+  const onSubmit = async (loginUserData: LoginFormData) => {
+    try {
+      const response = await loginUser(loginUserData.email, loginUserData.password)
+      if (response.success && response.data) {
+        loginAuth(response.data.token, response.data.user)
+        toast.success(`User login successfully`)
+      } else {
+        toast.error(!response.success ? response.error : `Failed to login user`)
+        console.error(!response.success ? response.error : `Failed to login user`)
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred during login. Please try again.'
+      )
+    }
   }
 
   return (
@@ -87,7 +112,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden lg:flex items-center justify-center p-8 bg-gradient-to-br from-blue-600 to-indigo-700">
+      <div className="hidden lg:flex items-center justify-center p-8 bg-linear-to-br from-blue-600 to-indigo-700">
         <div className="max-w-md space-y-6 text-white">
           <h2 className="text-4xl font-bold">Sign in to StepWise</h2>
           <p className="text-lg text-blue-100">
