@@ -37,3 +37,20 @@ export const steps = pgTable("steps", {
         .notNull()
         .$onUpdate(() => new Date()),
 })
+
+export const hotspots = pgTable("hotspots", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    stepId: uuid("step_id").notNull().references(() => steps.id, { onDelete: "cascade" }),
+    x: text("x").notNull(),
+    y: text("y").notNull(),
+    width: text("width").notNull(),
+    height: text("height").notNull(),
+    color: text("color").notNull(),
+    tooltipText: text("tooltip_text"),
+    tooltipPlacement: text("tooltip_placement"),
+    targetStepId: uuid("target_step_id"),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at')
+        .notNull()
+        .$onUpdate(() => new Date()),
+})
