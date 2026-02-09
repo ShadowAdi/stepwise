@@ -1,8 +1,8 @@
 "use client"
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useState, useRef, DragEvent } from 'react';
+import { useState, useRef, DragEvent, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,39 +12,61 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from '@/actions/steps/steps.action';
+import { StepResponse } from '@/types/step';
 
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
-  order: z.number().min(1, 'Order must be at least 1'),
 });
 
 type StepFormData = z.infer<typeof stepSchema>;
 
-interface Step {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  order: number;
-}
-
-const page = () => {
+const StepsPage = () => {
   const params = useParams();
+  const router = useRouter();
   const demoId = params.id as string;
-  const { isAuthenticated, isLoading, token } = useAuth()
-  const [steps, setSteps] = useState<Step[]>([]);
+  const { isAuthenticated, isLoading, token } = useAuth();
+  const [steps, setSteps] = useState<StepResponse[]>([]);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
-  const [selectedStep, setSelectedStep] = useState<Step | null>(null);
+  const [selectedStep, setSelectedStep] = useState<StepResponse | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<StepFormData>({
     resolver: zodResolver(stepSchema),
-    defaultValues: {
-      order: steps.length + 1,
-    }
   });
+
+  // Check authentication
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast.error('Please login to access this page');
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Fetch all steps for the demo
+  useEffect(() => {
+    const fetchSteps = async () => {
+      if (!token || !demoId) return;
+      
+      const result = await getAllSteps(demoId, token);
+      if (result.success && result.data) {
+        const sortedSteps = result.data.sort((a, b) => parseInt(a.position) - parseInt(b.position));
+        setSteps(sortedSteps);
+      } else {
+        console.error(!result.success ? result.error : 'Failed to load steps')
+        toast.error(!result.success ? result.error : 'Failed to load steps');
+      }
+    };
+
+    if (isAuthenticated && token) {
+      fetchSteps();
+    }
+  }, [demoId, token, isAuthenticated]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,29 +79,112 @@ const page = () => {
     }
   };
 
-  const onSubmit = (data: StepFormData) => {
+  const onSubmit = async (data: StepFormData) => {
     if (!uploadedImage) {
       toast.error('Please upload an image first');
       return;
     }
 
-    const newStep: Step = {
-      id: Date.now().toString(),
-      title: data.title,
-      description: data.description,
-      image: uploadedImage,
-      order: data.order,
-    };
+    if (!token) {
+      toast.error('Authentication required');
+      return;
+    }
 
-    const updatedSteps = [...steps, newStep].sort((a, b) => a.order - b.order);
-    setSteps(updatedSteps);
-    setUploadedImage(null);
+    setIsSubmitting(true);
+
+    try {
+      if (isEditMode && editingStepId) {
+        // Update existing step
+        const result = await updateStep(editingStepId, {
+          title: data.title,
+          description: data.description,
+          imageUrl: uploadedImage,
+        }, token);
+
+        if (result.success && result.data) {
+          setSteps(prevSteps => 
+            prevSteps.map(step => 
+              step.id === editingStepId ? result.data! : step
+            )
+          );
+          toast.success('Step updated successfully');
+          setIsEditMode(false);
+          setEditingStepId(null);
+        } else {
+          console.error(!result.success ? result.error : 'Failed to update step')
+          toast.error(!result.success ? result.error : 'Failed to update step');
+        }
+      } else {
+        // Create new step
+        const position = (steps.length + 1).toString();
+        const result = await createStep({
+          title: data.title,
+          description: data.description,
+          imageUrl: uploadedImage,
+          position: position,
+          demoId: demoId,
+        }, token, demoId);
+
+        if (result.success && result.data) {
+          setSteps(prevSteps => [...prevSteps, result.data!]);
+          toast.success('Step created successfully');
+        } else {
+          console.error(!result.success ? result.error : 'Failed to create step')
+          toast.error(!result.success ? result.error : 'Failed to create step');
+        }
+      }
+
+      setUploadedImage(null);
+      reset();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteStep = async (stepId: string) => {
+    if (!token) {
+      toast.error('Authentication required');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this step?')) {
+      return;
+    }
+
+    const result = await deleteStep(stepId, token);
+    if (result.success) {
+      setSteps(prevSteps => prevSteps.filter(step => step.id !== stepId));
+      if (selectedStep?.id === stepId) {
+        setSelectedStep(null);
+      }
+      toast.success('Step deleted successfully');
+    } else {
+      toast.error(result.error || 'Failed to delete step');
+    }
+  };
+
+  const handleEditStep = (step: StepResponse) => {
+    setIsEditMode(true);
+    setEditingStepId(step.id);
+    setValue('title', step.title || '');
+    setValue('description', step.description || '');
+    setUploadedImage(step.imageUrl);
+    setSelectedStep(step);
+  };
+
+  const cancelEdit = () => {
+    setIsEditMode(false);
+    setEditingStepId(null);
     reset();
-    setValue('order', updatedSteps.length + 1);
+    setUploadedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    toast.success('Step added successfully');
   };
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>, index: number) => {
@@ -92,23 +197,40 @@ const page = () => {
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>, dropIndex: number) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>, dropIndex: number) => {
     e.preventDefault();
-    if (draggedItem === null) return;
+    if (draggedItem === null || !token) return;
 
     const newSteps = [...steps];
     const draggedStep = newSteps[draggedItem];
     newSteps.splice(draggedItem, 1);
     newSteps.splice(dropIndex, 0, draggedStep);
 
-    // Update order
+    // Update positions for all affected steps
     const updatedSteps = newSteps.map((step, idx) => ({
       ...step,
-      order: idx,
+      position: (idx + 1).toString(),
     }));
 
     setSteps(updatedSteps);
     setDraggedItem(null);
+
+    // Update positions in backend
+    try {
+      for (const step of updatedSteps) {
+        if (step.position !== steps.find(s => s.id === step.id)?.position) {
+          await changeStepOrder(step.id, step.position, token);
+        }
+      }
+      toast.success('Step order updated');
+    } catch (error) {
+      toast.error('Failed to update step order');
+      // Revert on error
+      const result = await getAllSteps(demoId, token);
+      if (result.success && result.data) {
+        setSteps(result.data.sort((a, b) => parseInt(a.position) - parseInt(b.position)));
+      }
+    }
   };
 
   return (
@@ -128,7 +250,7 @@ const page = () => {
                 <p className="text-text-muted text-xs mt-2">Upload an image to get started</p>
               </div>
             ) : (
-              steps.sort((a, b) => a.order - b.order).map((step, index) => (
+              steps.sort((a, b) => parseInt(a.position) - parseInt(b.position)).map((step, index) => (
                 <div
                   key={step.id}
                   draggable
@@ -141,15 +263,41 @@ const page = () => {
                 >
                   <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden mb-2 border border-border-light">
                     <Image
-                      src={step.image}
-                      alt={step.title}
+                      src={step.imageUrl}
+                      alt={step.title || 'Step image'}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <h3 className="text-sm font-medium text-text-primary group-hover:text-primary transition-colors">
-                    {step.order}. {step.title}
+                  <h3 className="text-sm font-medium text-text-primary group-hover:text-primary transition-colors mb-2">
+                    {step.position}. {step.title}
                   </h3>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditStep(step);
+                      }}
+                      className="flex-1 text-xs"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteStep(step.id);
+                      }}
+                      className="flex-1 text-xs text-red-500 hover:text-red-600"
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               ))
             )}
@@ -159,7 +307,7 @@ const page = () => {
         <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.5] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
-              Create Step
+              {isEditMode ? 'Edit Step' : 'Create Step'}
             </h2>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
@@ -216,21 +364,6 @@ const page = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="order">Step Order</Label>
-                <Input
-                  id="order"
-                  type="number"
-                  min="1"
-                  placeholder="Enter step order"
-                  {...register('order', { valueAsNumber: true })}
-                  className={errors.order ? 'border-red-500' : ''}
-                />
-                {errors.order && (
-                  <p className="text-xs text-red-500">{errors.order.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
@@ -248,7 +381,7 @@ const page = () => {
                 <Textarea
                   id="description"
                   placeholder="Enter step description"
-                  rows={4}
+                  rows={8}
                   {...register('description')}
                   className={errors.description ? 'border-red-500' : ''}
                 />
@@ -257,9 +390,21 @@ const page = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full">
-                Submit Step
-              </Button>
+              <div className="flex gap-2">
+                <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? 'Submitting...' : isEditMode ? 'Update Step' : 'Create Step'}
+                </Button>
+                {isEditMode && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={cancelEdit}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </form>
           </div>
         </section>
@@ -275,8 +420,8 @@ const page = () => {
               <div className="space-y-4">
                 <div className="relative w-full h-96 rounded-lg overflow-hidden border border-border-light">
                   <Image
-                    src={selectedStep.image}
-                    alt={selectedStep.title}
+                    src={selectedStep.imageUrl}
+                    alt={selectedStep.title || 'Step image'}
                     fill
                     className="object-cover"
                   />
@@ -284,7 +429,7 @@ const page = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
-                      Step {selectedStep.order}
+                      Step {selectedStep.position}
                     </span>
                   </div>
                   <h3 className="text-2xl font-bold text-text-primary mb-3">
@@ -318,4 +463,4 @@ const page = () => {
   )
 }
 
-export default page
+export default StepsPage

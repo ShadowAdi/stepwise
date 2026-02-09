@@ -1,3 +1,5 @@
+'use server'
+
 import { getUserIdFromToken } from "@/helper/get-user-from-id";
 import { ActionResponse, CreateStepDTO, StepResponse, UpdateStepDTO } from "@/types";
 import { getDemoById } from "../demos/demos.action";
