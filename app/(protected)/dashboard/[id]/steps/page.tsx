@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from '@/actions/steps/steps.action';
 import { StepResponse } from '@/types/step';
+import { supabase } from '@/lib/supabase';
 
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -52,7 +53,7 @@ const StepsPage = () => {
   useEffect(() => {
     const fetchSteps = async () => {
       if (!token || !demoId) return;
-      
+
       const result = await getAllSteps(demoId, token);
       if (result.success && result.data) {
         const sortedSteps = result.data.sort((a, b) => parseInt(a.position) - parseInt(b.position));
@@ -68,14 +69,13 @@ const StepsPage = () => {
     }
   }, [demoId, token, isAuthenticated]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const { data, error } = await supabase.storage.from("step-image").upload(`steps/${crypto.randomUUID()}`, file)
+      if (error) { console.error(error); throw new Error(`error: ${error}`); toast.error(`error: ${error}`) }
+      const { fullPath } = data
+      setUploadedImage(fullPath)
     }
   };
 
@@ -94,7 +94,6 @@ const StepsPage = () => {
 
     try {
       if (isEditMode && editingStepId) {
-        // Update existing step
         const result = await updateStep(editingStepId, {
           title: data.title,
           description: data.description,
@@ -102,8 +101,8 @@ const StepsPage = () => {
         }, token);
 
         if (result.success && result.data) {
-          setSteps(prevSteps => 
-            prevSteps.map(step => 
+          setSteps(prevSteps =>
+            prevSteps.map(step =>
               step.id === editingStepId ? result.data! : step
             )
           );
@@ -115,7 +114,6 @@ const StepsPage = () => {
           toast.error(!result.success ? result.error : 'Failed to update step');
         }
       } else {
-        // Create new step
         const position = (steps.length + 1).toString();
         const result = await createStep({
           title: data.title,
@@ -395,9 +393,9 @@ const StepsPage = () => {
                   {isSubmitting ? 'Submitting...' : isEditMode ? 'Update Step' : 'Create Step'}
                 </Button>
                 {isEditMode && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={cancelEdit}
                     className="flex-1"
                   >
