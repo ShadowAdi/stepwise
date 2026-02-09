@@ -129,7 +129,6 @@ export const getAllSteps = async (
     }
 };
 
-
 export const getStep = async (
     stepId: string,
 ): Promise<ActionResponse<StepResponse>> => {
