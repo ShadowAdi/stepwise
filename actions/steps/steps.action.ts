@@ -128,3 +128,48 @@ export const getAllSteps = async (
         };
     }
 };
+
+
+export const getStep = async (
+    stepId: string,
+): Promise<ActionResponse<StepResponse>> => {
+    try {
+        if (!stepId) {
+            return {
+                success: false,
+                error: "Demo Id is required"
+            };
+        }
+
+
+        const [step] = await db.select().from(steps).where(eq(steps.id,stepId)).limit(1)
+
+         if (!step) {
+            return {
+                success: false,
+                error: "Step not found"
+            };
+        }
+
+        return {
+            success: true,
+            data: step,
+        };
+    } catch (error) {
+        console.error("Failed to get step:", error);
+
+        if (error instanceof Error) {
+            if (error.message.includes("connection")) {
+                return {
+                    success: false,
+                    error: "Database connection failed. Please try again later"
+                };
+            }
+        }
+
+        return {
+            success: false,
+            error: "Failed to get step. Please try again"
+        };
+    }
+};
