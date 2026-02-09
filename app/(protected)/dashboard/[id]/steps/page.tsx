@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
+  order: z.number().min(1, 'Order must be at least 1'),
 });
 
 type StepFormData = z.infer<typeof stepSchema>;
@@ -34,10 +35,14 @@ const page = () => {
   const [steps, setSteps] = useState<Step[]>([]);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
+  const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<StepFormData>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<StepFormData>({
     resolver: zodResolver(stepSchema),
+    defaultValues: {
+      order: steps.length + 1,
+    }
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,12 +67,14 @@ const page = () => {
       title: data.title,
       description: data.description,
       image: uploadedImage,
-      order: steps.length,
+      order: data.order,
     };
 
-    setSteps([...steps, newStep]);
+    const updatedSteps = [...steps, newStep].sort((a, b) => a.order - b.order);
+    setSteps(updatedSteps);
     setUploadedImage(null);
     reset();
+    setValue('order', updatedSteps.length + 1);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -106,8 +113,8 @@ const page = () => {
   return (
     <div className="h-screen bg-surface p-4 md:p-6 lg:p-8 overflow-hidden">
       <div className="max-w-7xl mx-auto h-full flex flex-row gap-6">
-        {/* Section 1 - Steps List (Draggable) */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.2] h-full flex flex-col overflow-hidden">
+        {/* Section 1 - Steps List (Draggable & Selectable) */}
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.15] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
               Steps
@@ -121,14 +128,17 @@ const page = () => {
                 <p className="text-text-muted text-xs mt-2">Upload an image to get started</p>
               </div>
             ) : (
-              steps.map((step, index) => (
+              steps.sort((a, b) => a.order - b.order).map((step, index) => (
                 <div
                   key={step.id}
                   draggable
                   onDragStart={(e) => handleDragStart(e, index)}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, index)}
-                  className="group cursor-move hover:shadow-md transition-shadow"
+                  onClick={() => setSelectedStep(step)}
+                  className={`group cursor-pointer hover:shadow-md transition-all rounded-lg p-2 ${
+                    selectedStep?.id === step.id ? 'ring-2 ring-primary bg-surface' : ''
+                  }`}
                 >
                   <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden mb-2 border border-border-light">
                     <Image
@@ -139,7 +149,7 @@ const page = () => {
                     />
                   </div>
                   <h3 className="text-sm font-medium text-text-primary group-hover:text-primary transition-colors">
-                    {index + 1}. {step.title}
+                    {step.order}. {step.title}
                   </h3>
                 </div>
               ))
@@ -147,16 +157,17 @@ const page = () => {
           </div>
         </section>
 
-        {/* Section 2 - Image Upload */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.6] h-full flex flex-col overflow-hidden">
+        {/* Section 2 - Image Upload & Form */}
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.45] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
-              Upload Image
+              Create Step
             </h2>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
-            <div className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
+                <Label className="mb-2 block">Step Image</Label>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -188,36 +199,39 @@ const page = () => {
                     </div>
                   )}
                 </label>
+
+                {uploadedImage && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setUploadedImage(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                    }}
+                    className="w-full mt-3"
+                  >
+                    Remove Image
+                  </Button>
+                )}
               </div>
 
-              {uploadedImage && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setUploadedImage(null);
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = '';
-                    }
-                  }}
-                  className="w-full"
-                >
-                  Remove Image
-                </Button>
-              )}
-            </div>
-          </div>
-        </section>
+              <div className="space-y-2">
+                <Label htmlFor="order">Step Order</Label>
+                <Input
+                  id="order"
+                  type="number"
+                  min="1"
+                  placeholder="Enter step order"
+                  {...register('order', { valueAsNumber: true })}
+                  className={errors.order ? 'border-red-500' : ''}
+                />
+                {errors.order && (
+                  <p className="text-xs text-red-500">{errors.order.message}</p>
+                )}
+              </div>
 
-        {/* Section 3 - Title & Description Form */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.2] h-full flex flex-col overflow-hidden">
-          <div className="p-6 border-b border-border">
-            <h2 className="text-2xl font-semibold text-text-primary">
-              Step Details
-            </h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
@@ -236,7 +250,7 @@ const page = () => {
                 <Textarea
                   id="description"
                   placeholder="Enter step description"
-                  rows={6}
+                  rows={4}
                   {...register('description')}
                   className={errors.description ? 'border-red-500' : ''}
                 />
@@ -249,6 +263,57 @@ const page = () => {
                 Submit Step
               </Button>
             </form>
+          </div>
+        </section>
+
+        {/* Section 3 - Live Preview */}
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.4] h-full flex flex-col overflow-hidden">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-2xl font-semibold text-text-primary">
+              Live Preview
+            </h2>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            {selectedStep ? (
+              <div className="space-y-4">
+                <div className="relative w-full h-96 rounded-lg overflow-hidden border border-border-light">
+                  <Image
+                    src={selectedStep.image}
+                    alt={selectedStep.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
+                      Step {selectedStep.order}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-text-primary mb-3">
+                    {selectedStep.title}
+                  </h3>
+                  <p className="text-text-secondary leading-relaxed">
+                    {selectedStep.description}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="w-24 h-24 rounded-full bg-surface flex items-center justify-center mb-4">
+                  <svg className="w-12 h-12 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">
+                  No Step Selected
+                </h3>
+                <p className="text-text-muted text-sm">
+                  Click on a step from the left to preview it here
+                </p>
+              </div>
+            )}
           </div>
         </section>
       </div>
