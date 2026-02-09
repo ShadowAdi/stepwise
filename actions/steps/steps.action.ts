@@ -3,6 +3,7 @@ import { ActionResponse, CreateStepDTO, StepResponse } from "@/types";
 import { getDemoById } from "../demos/demos.action";
 import { db } from "@/db";
 import { steps } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const createStep = async (
     payload: CreateStepDTO,
@@ -78,6 +79,52 @@ export const createStep = async (
         return {
             success: false,
             error: "Failed to create step. Please try again"
+        };
+    }
+};
+
+export const getAllSteps = async (
+    demoId: string,
+    token: string
+): Promise<ActionResponse<StepResponse[]>> => {
+    try {
+        if (!demoId) {
+            return {
+                success: false,
+                error: "Demo Id is required"
+            };
+        }
+
+        const isDemoExist = await getDemoById(demoId, token)
+
+        if (!isDemoExist) {
+            return {
+                success: false,
+                error: `Demo not found for the given id`
+            };
+        }
+
+        const allSteps = await db.select().from(steps).where(eq(steps.demoId,demoId))
+
+        return {
+            success: true,
+            data: allSteps,
+        };
+    } catch (error) {
+        console.error("Failed to get all steps:", error);
+
+        if (error instanceof Error) {
+            if (error.message.includes("connection")) {
+                return {
+                    success: false,
+                    error: "Database connection failed. Please try again later"
+                };
+            }
+        }
+
+        return {
+            success: false,
+            error: "Failed to get all steps. Please try again"
         };
     }
 };
