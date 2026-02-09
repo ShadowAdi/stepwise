@@ -112,9 +112,8 @@ const page = () => {
 
   return (
     <div className="h-screen bg-surface p-4 md:p-6 lg:p-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto h-full flex flex-row gap-6">
-        {/* Section 1 - Steps List (Draggable & Selectable) */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.15] h-full flex flex-col overflow-hidden">
+      <div className="max-w-8xl mx-auto h-full flex flex-row gap-6">
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.2] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
               Steps
@@ -157,8 +156,7 @@ const page = () => {
           </div>
         </section>
 
-        {/* Section 2 - Image Upload & Form */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.45] h-full flex flex-col overflow-hidden">
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.5] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
               Create Step
@@ -266,8 +264,7 @@ const page = () => {
           </div>
         </section>
 
-        {/* Section 3 - Live Preview */}
-        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.4] h-full flex flex-col overflow-hidden">
+        <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.3] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
             <h2 className="text-2xl font-semibold text-text-primary">
               Live Preview
