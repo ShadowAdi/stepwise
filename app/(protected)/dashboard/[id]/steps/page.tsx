@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from '@/actions/steps/steps.action';
 import { StepResponse } from '@/types/step';
-import { supabase } from '@/lib/supabase';
+import { uploadStepImage } from '@/actions/upload/upload.action';
 
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -71,11 +71,28 @@ const StepsPage = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const { data, error } = await supabase.storage.from("step-image").upload(`steps/${crypto.randomUUID()}`, file)
-      if (error) { console.error(error); throw new Error(`error: ${error}`); toast.error(`error: ${error}`) }
-      const { fullPath } = data
-      setUploadedImage(fullPath)
+    if (!file) return;
+
+    try {
+      toast.loading('Uploading image...');
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const result = await uploadStepImage(formData);
+      
+      if (result.success && result.data) {
+        setUploadedImage(result.data.publicUrl);
+        toast.dismiss();
+        toast.success('Image uploaded successfully');
+      } else {
+        toast.dismiss();
+        toast.error(result.error || 'Failed to upload image');
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
     }
   };
 
