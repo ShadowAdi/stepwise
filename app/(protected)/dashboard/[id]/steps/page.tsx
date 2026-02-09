@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -31,7 +32,7 @@ interface Step {
 const page = () => {
   const params = useParams();
   const demoId = params.id as string;
-
+  const { isAuthenticated, isLoading, token } = useAuth()
   const [steps, setSteps] = useState<Step[]>([]);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
@@ -135,9 +136,8 @@ const page = () => {
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, index)}
                   onClick={() => setSelectedStep(step)}
-                  className={`group cursor-pointer hover:shadow-md transition-all rounded-lg p-2 ${
-                    selectedStep?.id === step.id ? 'ring-2 ring-primary bg-surface' : ''
-                  }`}
+                  className={`group cursor-pointer hover:shadow-md transition-all rounded-lg p-2 ${selectedStep?.id === step.id ? 'ring-2 ring-primary bg-surface' : ''
+                    }`}
                 >
                   <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden mb-2 border border-border-light">
                     <Image
