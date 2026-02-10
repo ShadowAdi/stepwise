@@ -1,5 +1,6 @@
 'use server'
 
+import { supabase } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL!;
@@ -55,24 +56,22 @@ export async function deleteStepImage(imageUrl: string) {
 
 export async function uploadStepImage(formData: FormData) {
   try {
-    const file = formData.get('file') as File;
-    
+    const file = formData.get("file") as File
+
     if (!file) {
       return {
         success: false,
-        error: 'No file provided'
-      };
+        error: "No File Found"
+      }
     }
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `steps/${crypto.randomUUID()}.${fileExt}`;
+    const fileExt = file.name.split(".").pop()
+    const fileName = `steps/${crypto.randomUUID()}.${fileExt}`
 
-    const { data, error } = await supabaseAdmin.storage
-      .from('step-image')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+    const { data, error } = await supabaseAdmin.storage.from("step-image").upload(fileName, file, {
+      upsert: false,
+      cacheControl: "3600"
+    })
 
     if (error) {
       console.error('Upload error:', error);
@@ -82,10 +81,7 @@ export async function uploadStepImage(formData: FormData) {
       };
     }
 
-    // Get public URL
-    const { data: { publicUrl } } = supabaseAdmin.storage
-      .from('step-image')
-      .getPublicUrl(data.path);
+    const { data: { publicUrl } } = supabaseAdmin.storage.from("step-image").getPublicUrl(data.path)
 
     return {
       success: true,
@@ -95,10 +91,10 @@ export async function uploadStepImage(formData: FormData) {
       }
     };
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error(`Upload error: `, error)
     return {
       success: false,
-      error: 'Failed to upload image'
-    };
+      error: "Failed to upload image"
+    }
   }
 }
