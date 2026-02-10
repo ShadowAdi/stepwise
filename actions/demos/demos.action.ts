@@ -371,6 +371,84 @@ export const getDemoWithStepsCount = async (
     }
 };
 
+export const getDemoWithSteps = async (
+    idOrSlug: string,
+    token?: string
+): Promise<ActionResponse<DemoResponse & { stepsCount: number; steps: any[] }>> => {
+    try {
+        let userId: string | undefined;
+
+        if (token) {
+            const authResult = await getUserIdFromToken(token);
+            if (authResult.success) {
+                userId = authResult.userId;
+            }
+        }
+
+        // Check if idOrSlug is a valid UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(idOrSlug);
+
+        const [demo] = await db
+            .select()
+            .from(demos)
+            .where(
+                isUuid
+                    ? or(
+                        eq(demos.id, idOrSlug),
+                        eq(demos.slug, idOrSlug)
+                    )!
+                    : eq(demos.slug, idOrSlug)
+            )
+            .limit(1);
+
+        if (!demo) {
+            return {
+                success: false,
+                error: "Demo not found"
+            };
+        }
+
+        if (!demo.isPublic && demo.userId !== userId) {
+            return {
+                success: false,
+                error: "You don't have permission to view this demo"
+            };
+        }
+
+        // Fetch steps sorted by position
+        const demoSteps = await db
+            .select()
+            .from(steps)
+            .where(eq(steps.demoId, demo.id))
+            .orderBy(asc(steps.position));
+
+        return {
+            success: true,
+            data: {
+                ...demo,
+                isPublic: demo.isPublic ?? false,
+                stepsCount: demoSteps.length,
+                steps: demoSteps
+            }
+        };
+    } catch (error) {
+        console.error("Failed to get demo with steps:", error);
+
+        if (error instanceof Error && error.message.includes("connection")) {
+            return {
+                success: false,
+                error: "Database connection failed. Please try again later"
+            };
+        }
+
+        return {
+            success: false,
+            error: "Failed to fetch demo. Please try again"
+        };
+    }
+};
+
 export const updateDemo = async (
     demoId: string,
     payload: UpdateDemoDTO,

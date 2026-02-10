@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getDemoWithStepsCount, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
-import { getAllSteps } from "@/actions/steps/steps.action";
+import { getDemoWithSteps, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
 import { DemoResponse, StepResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,21 +40,14 @@ export default function ViewDemoPage() {
 
   const fetchDemo = async () => {
     setIsLoading(true);
-    const result = await getDemoWithStepsCount(slug, token || undefined);
+    const result = await getDemoWithSteps(slug, token || undefined);
 
-    if (result.success) {
-      setDemo(result.data);
-      
-      // Fetch steps if demo exists
-      if (result.data) {
-        const stepsResult = await getAllSteps(result.data.id, token || '');
-        if (stepsResult.success && stepsResult.data) {
-          const sortedSteps = stepsResult.data.sort((a, b) => parseInt(a.position) - parseInt(b.position));
-          setSteps(sortedSteps);
-        }
-      }
+    if (result.success && result.data) {
+      const { steps: demoSteps, ...demoData } = result.data;
+      setDemo(demoData);
+      setSteps(demoSteps || []);
     } else {
-      toast.error(result.error);
+      toast.error(!result.success ? result.error : 'Failed to load demo');
       router.push("/dashboard");
     }
 

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getDemoWithStepsCount, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
-import { DemoResponse } from "@/types";
+import { getDemoWithStepsCount, getDemoWithSteps, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
+import { DemoResponse, StepResponse } from "@/types";
+import { StepViewer } from "@/components/demo/StepViewer";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -32,15 +33,20 @@ export default function ViewDemoPage() {
   const params = useParams();
   const demoId = params.id as string;
 
-  const [demo, setDemo] = useState<(DemoResponse & { stepsCount: number }) | null>(null);
+  const [demo, setDemo] = useState<(DemoResponse & { stepsCount: number; steps?: StepResponse[] }) | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
 
   const fetchDemo = async () => {
     if (!token || !demoId) return;
 
     setIsLoading(true);
-    const result = await getDemoWithStepsCount(demoId, token);
+    
+    // Fetch demo with steps if we want to show them, otherwise just count
+    const result = showSteps 
+      ? await getDemoWithSteps(demoId, token)
+      : await getDemoWithStepsCount(demoId, token);
 
     if (result.success) {
       setDemo(result.data);
@@ -54,7 +60,7 @@ export default function ViewDemoPage() {
 
   useEffect(() => {
     fetchDemo();
-  }, [demoId, token]);
+  }, [demoId, token, showSteps]);
 
   const handleDelete = async () => {
     if (!demo || !token) return;
@@ -280,13 +286,28 @@ export default function ViewDemoPage() {
           </Card>
         </div>
 
-        {/* Steps Section - Coming Soon */}
+        {/* Steps Section */}
         <Card className="rounded-sm">
           <CardHeader>
-            <CardTitle>Demo Steps</CardTitle>
-            <CardDescription>
-              Interactive steps will be displayed here
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Demo Steps</CardTitle>
+                <CardDescription>
+                  {demo.stepsCount === 0 
+                    ? "No steps added yet" 
+                    : `${demo.stepsCount} step${demo.stepsCount !== 1 ? 's' : ''} in this demo`}
+                </CardDescription>
+              </div>
+              {demo.stepsCount > 0 && (
+                <Button 
+                  onClick={() => setShowSteps(!showSteps)}
+                  variant="outline"
+                  className="rounded-sm"
+                >
+                  {showSteps ? 'Hide Steps' : 'View Steps'}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {demo.stepsCount === 0 ? (
@@ -298,18 +319,48 @@ export default function ViewDemoPage() {
                 <p className="text-gray-500 mb-6">
                   Add steps to create your interactive demo
                 </p>
-                <Button className="rounded-sm" disabled>
+                <Button 
+                  className="rounded-sm"
+                  onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Add Step (Coming Soon)
+                  Add Step
                 </Button>
               </div>
+            ) : showSteps && demo.steps ? (
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-sm p-4 border border-gray-200">
+                  <StepViewer steps={demo.steps} />
+                </div>
+                <div className="flex justify-center pt-4">
+                  <Button 
+                    className="rounded-sm"
+                    onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Manage Steps
+                  </Button>
+                </div>
+              </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">
-                  Steps functionality coming soon...
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">
+                  Click "View Steps" to preview your interactive demo
                 </p>
+                <Button 
+                  className="rounded-sm"
+                  onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                  variant="outline"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Manage Steps
+                </Button>
               </div>
             )}
           </CardContent>
