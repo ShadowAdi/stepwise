@@ -129,7 +129,7 @@ export default function ViewDemoPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <motion.div 
           className="text-center"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -157,10 +157,10 @@ export default function ViewDemoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <motion.header 
-        className="bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-50 shadow-sm"
+        className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
@@ -257,13 +257,13 @@ export default function ViewDemoPage() {
       >
         {/* Demo Header */}
         <motion.div 
-          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200 p-10 mb-8"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 mb-8"
           variants={itemVariants}
         >
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
               <motion.h1 
-                className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+                className="text-5xl font-bold text-gray-900 mb-4"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -272,7 +272,7 @@ export default function ViewDemoPage() {
               </motion.h1>
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <motion.span 
-                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold shadow-sm ${demo.isPublic ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800'}`}
+                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${demo.isPublic ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
                   whileHover={{ scale: 1.05 }}
                 >
                   {demo.isPublic ? (
@@ -316,20 +316,20 @@ export default function ViewDemoPage() {
           className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8"
           variants={containerVariants}
         >
-          {[
+            {[
             { 
               title: "Total Steps", 
               value: demo.stepsCount, 
               description: demo.stepsCount === 0 ? "No steps yet" : "Interactive steps",
               icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-              gradient: "from-blue-500 to-cyan-500"
+              color: "blue"
             },
             { 
               title: "Demo Link", 
               value: `/${demo.slug}`, 
               description: "Share this link",
               icon: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
-              gradient: "from-purple-500 to-pink-500",
+              color: "purple",
               isMono: true
             },
             { 
@@ -337,7 +337,7 @@ export default function ViewDemoPage() {
               value: demo.stepsCount === 0 ? "Draft" : "Ready", 
               description: demo.stepsCount === 0 ? "Add steps to publish" : "Demo is complete",
               icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-              gradient: demo.stepsCount === 0 ? "from-amber-500 to-orange-500" : "from-green-500 to-emerald-500"
+              color: demo.stepsCount === 0 ? "amber" : "green"
             }
           ].map((stat, idx) => (
             <motion.div
@@ -346,13 +346,22 @@ export default function ViewDemoPage() {
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card className="rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-shadow bg-white/80 backdrop-blur-sm overflow-hidden cursor-default">
-                <div className={`h-2 bg-gradient-to-r ${stat.gradient}`} />
+              <Card className="rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow bg-white overflow-hidden cursor-default">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <CardDescription className="text-xs font-semibold uppercase tracking-wider">{stat.title}</CardDescription>
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${stat.gradient}`}>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <CardDescription className="text-xs font-semibold uppercase tracking-wider text-gray-500">{stat.title}</CardDescription>
+                    <div className={`p-2 rounded-lg ${
+                      stat.color === 'blue' ? 'bg-blue-100' :
+                      stat.color === 'purple' ? 'bg-purple-100' :
+                      stat.color === 'green' ? 'bg-green-100' :
+                      'bg-amber-100'
+                    }`}>
+                      <svg className={`w-5 h-5 ${
+                        stat.color === 'blue' ? 'text-blue-600' :
+                        stat.color === 'purple' ? 'text-purple-600' :
+                        stat.color === 'green' ? 'text-green-600' :
+                        'text-amber-600'
+                      }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
                       </svg>
                     </div>

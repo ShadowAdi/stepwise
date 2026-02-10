@@ -62,7 +62,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
   return (
     <motion.div 
       ref={imageRef} 
-      className="relative w-full aspect-video bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-xl"
+      className="relative w-full aspect-video bg-gray-50 rounded-xl overflow-hidden shadow-sm"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
@@ -177,7 +177,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
               <AnimatePresence>
                 {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (
                   <motion.div
-                    className="absolute z-30 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl shadow-2xl whitespace-nowrap pointer-events-none"
+                    className="absolute z-30 px-4 py-3 text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
                     style={{
                       bottom: '110%',
                       left: '50%',
@@ -270,7 +270,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
       <AnimatePresence>
         {hotspots.length > 0 && !isLoading && (
           <motion.div 
-            className="absolute bottom-6 right-6 bg-gradient-to-r from-blue-600 to-blue-500 backdrop-blur-lg rounded-xl shadow-2xl px-4 py-3 text-sm font-semibold text-white flex items-center gap-3 cursor-default"
+            className="absolute bottom-6 right-6 bg-blue-600 rounded-lg shadow-sm px-4 py-3 text-sm font-semibold text-white flex items-center gap-3 cursor-default"
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -290,7 +290,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
       <AnimatePresence>
         {hotspots.length > 0 && !hoveredHotspot && !isLoading && (
           <motion.div 
-            className="absolute top-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 backdrop-blur-lg rounded-xl shadow-2xl px-5 py-3 text-sm font-semibold text-white cursor-default"
+            className="absolute top-6 right-6 bg-blue-600 rounded-lg shadow-sm px-5 py-3 text-sm font-semibold text-white cursor-default"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}

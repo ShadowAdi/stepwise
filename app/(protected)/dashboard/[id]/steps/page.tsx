@@ -287,23 +287,23 @@ const StepsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-[1800px] mx-auto h-[calc(100vh-4rem)] flex flex-row gap-6">
         {/* Steps List Panel */}
         <motion.section 
-          className="border-3 border-blue-200 rounded-2xl bg-white/90 backdrop-blur-sm shadow-2xl hover:shadow-3xl transition-all flex-[0.25] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.25] h-full flex flex-col overflow-hidden"
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
         >
-          <div className="p-6 border-b-2 border-blue-100 bg-gradient-to-r from-blue-500 to-purple-500">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <div className="p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
               Steps ({steps.length})
             </h2>
-            <p className="text-sm text-blue-100 mt-1 font-medium">Drag to reorder steps</p>
+            <p className="text-sm text-gray-500 mt-1 font-medium">Drag to reorder steps</p>
           </div>
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {steps.length === 0 ? (
@@ -342,7 +342,7 @@ const StepsPage = () => {
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute top-2 left-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xs px-3 py-1 rounded-full shadow-lg">
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">
                         #{step.position}
                       </div>
                     </div>
@@ -402,13 +402,13 @@ const StepsPage = () => {
 
         {/* Step Management Panel */}
         <motion.section 
-          className="border-3 border-purple-200 rounded-2xl bg-white/90 backdrop-blur-sm shadow-2xl hover:shadow-3xl transition-all flex-[0.45] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.45] h-full flex flex-col overflow-hidden"
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
         >
-          <div className="p-6 border-b-2 border-purple-100 bg-gradient-to-r from-purple-500 to-pink-500">
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <div className="p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -424,7 +424,7 @@ const StepsPage = () => {
                 <Button
                   variant={viewMode === 'create' ? 'default' : 'outline'}
                   onClick={() => setViewMode('create')}
-                  className="w-full bg-white hover:bg-purple-50 text-purple-700 border-2 border-white cursor-pointer"
+                  className="w-full cursor-pointer"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -446,7 +446,7 @@ const StepsPage = () => {
                     }
                     setViewMode('hotspots');
                   }}
-                  className="w-full bg-white hover:bg-purple-50 text-purple-700 border-2 border-white cursor-pointer"
+                  className="w-full cursor-pointer"
                   disabled={!selectedStep}
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,7 +481,7 @@ const StepsPage = () => {
                     />
                     <motion.label
                       htmlFor="image-upload"
-                      className="block w-full h-72 border-3 border-dashed border-blue-300 rounded-2xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
+                      className="block w-full h-72 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -591,7 +591,7 @@ const StepsPage = () => {
                     >
                       <Button 
                         type="submit" 
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-6 cursor-pointer" 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 cursor-pointer" 
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -675,13 +675,13 @@ const StepsPage = () => {
 
         {/* Live Preview Panel */}
         <motion.section 
-          className="border-3 border-pink-200 rounded-2xl bg-white/90 backdrop-blur-sm shadow-2xl hover:shadow-3xl transition-all flex-[0.3] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.3] h-full flex flex-col overflow-hidden"
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
         >
-          <div className="p-6 border-b-2 border-pink-100 bg-gradient-to-r from-pink-500 to-red-500">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <div className="p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -700,7 +700,7 @@ const StepsPage = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-3 border-pink-200 shadow-xl">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                     <Image
                       src={selectedStep.imageUrl}
                       alt={selectedStep.title || 'Step image'}
@@ -711,7 +711,7 @@ const StepsPage = () => {
                   <div>
                     <div className="flex items-center gap-3 mb-4">
                       <motion.span 
-                        className="text-sm font-black text-white bg-gradient-to-r from-pink-600 to-red-600 px-4 py-2 rounded-full shadow-lg"
+                        className="text-sm font-bold text-white bg-blue-600 px-4 py-2 rounded-full shadow-sm"
                         whileHover={{ scale: 1.1 }}
                       >
                         Step {selectedStep.position}
@@ -734,11 +734,11 @@ const StepsPage = () => {
                   exit={{ opacity: 0 }}
                 >
                   <motion.div
-                    className="w-28 h-28 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center mb-6"
+                    className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-6"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <svg className="w-14 h-14 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-14 h-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>

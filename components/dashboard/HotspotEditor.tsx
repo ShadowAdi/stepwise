@@ -253,7 +253,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
       <AnimatePresence>
         {isEditMode && (
           <motion.div 
-            className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl border-2 border-blue-200 shadow-lg space-y-4"
+            className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm space-y-4"
             initial={{ opacity: 0, height: 0, y: -20 }}
             animate={{ opacity: 1, height: 'auto', y: 0 }}
             exit={{ opacity: 0, height: 0, y: -20 }}
@@ -307,7 +307,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
               />
             </motion.div>
             <motion.div 
-              className="flex items-center gap-3 bg-white/70 backdrop-blur-sm px-4 py-3 rounded-lg"
+              className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg border border-gray-200"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -325,11 +325,11 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
 
       <motion.div
         ref={imageRef}
-        className="relative w-full aspect-video rounded-xl overflow-hidden border-3 border-border shadow-xl select-none"
+        className="relative w-full aspect-video rounded-xl overflow-hidden border border-border shadow-sm select-none"
         style={{ 
           cursor: isEditMode ? 'crosshair' : 'default', 
           userSelect: 'none',
-          borderWidth: isEditMode ? '3px' : '2px',
+          borderWidth: '2px',
           borderColor: isEditMode ? '#3b82f6' : '#e2e8f0'
         }}
         onMouseDown={handleMouseDown}
@@ -391,7 +391,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
             >
               {isEditMode && (
                 <motion.button
-                  className="absolute -top-3 -right-3 bg-gradient-to-r from-red-500 to-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 cursor-pointer z-10"
+                  className="absolute -top-3 -right-3 bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 cursor-pointer z-10"
                   onClick={(e) => {
                     e.stopPropagation();
                     setHotspotToDelete(hotspot);
@@ -456,7 +456,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
               {hotspots.map((hotspot, idx) => (
                 <motion.div
                   key={hotspot.id}
-                  className="p-4 bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl text-xs space-y-2 shadow-sm hover:shadow-md transition-shadow cursor-default"
+                  className="p-4 bg-white border border-gray-200 rounded-xl text-xs space-y-2 shadow-sm hover:shadow-md transition-shadow cursor-default"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
