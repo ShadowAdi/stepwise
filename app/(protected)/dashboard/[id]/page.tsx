@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { getDemoWithStepsCount, getDemoWithSteps, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
 import { DemoResponse, StepResponse } from "@/types";
-import { StepViewer } from "@/components/demo/StepViewer";
-import { Button } from "@/components/ui/Button";
+import { StepViewer } from "@/components/demo/StepViewer";import { ShareEmbedDialog } from '@/components/demo/ShareEmbedDialog';import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -58,6 +57,7 @@ export default function ViewDemoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   const fetchDemo = async () => {
     if (!token || !demoId) return;
@@ -378,15 +378,14 @@ export default function ViewDemoPage() {
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button 
-                        variant="ghost" 
                         size="sm" 
-                        onClick={copyShareLink}
-                        className="h-8 text-xs rounded-lg mt-2 cursor-pointer"
+                        onClick={() => setShareDialogOpen(true)}
+                        className="h-8 text-xs rounded-lg mt-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
-                        Copy Link
+                        Share & Embed
                       </Button>
                     </motion.div>
                   )}
@@ -546,6 +545,16 @@ export default function ViewDemoPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Share & Embed Dialog */}
+      {demo && (
+        <ShareEmbedDialog
+          isOpen={shareDialogOpen}
+          onClose={() => setShareDialogOpen(false)}
+          demoSlug={demo.slug}
+          demoTitle={demo.title}
+        />
+      )}
     </div>
   );
 }
