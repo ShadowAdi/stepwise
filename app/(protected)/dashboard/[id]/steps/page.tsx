@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from '@/actions/steps/steps.action';
 import { StepResponse } from '@/types/step';
 import { uploadStepImage, deleteStepImage } from '@/actions/upload/upload.action';
+import { HotspotEditor } from '@/components/dashboard/HotspotEditor';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,6 +48,7 @@ const StepsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stepToDelete, setStepToDelete] = useState<StepResponse | null>(null);
   const [oldImageUrl, setOldImageUrl] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'create' | 'hotspots'>('create');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<StepFormData>({
@@ -175,6 +177,7 @@ const StepsPage = () => {
 
       setUploadedImage(null);
       setOldImageUrl(null);
+      setViewMode('create');
       reset();
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -221,6 +224,7 @@ const StepsPage = () => {
     setUploadedImage(step.imageUrl);
     setOldImageUrl(step.imageUrl); // Store the old image URL
     setSelectedStep(step);
+    setViewMode('create'); // Switch to create/edit view
   };
 
   const cancelEdit = () => {
@@ -229,6 +233,7 @@ const StepsPage = () => {
     reset();
     setUploadedImage(null);
     setOldImageUrl(null);
+    setViewMode('create');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -353,11 +358,37 @@ const StepsPage = () => {
 
         <section className="border-2 border-border rounded-lg bg-background hover:border-border-light transition-colors flex-[0.5] h-full flex flex-col overflow-hidden">
           <div className="p-6 border-b border-border">
-            <h2 className="text-2xl font-semibold text-text-primary">
-              {isEditMode ? 'Edit Step' : 'Create Step'}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-text-primary">
+                Step Management
+              </h2>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === 'create' ? 'default' : 'outline'}
+                onClick={() => setViewMode('create')}
+                className="flex-1"
+              >
+                {isEditMode ? 'Edit Step' : 'Create Step'}
+              </Button>
+              <Button
+                variant={viewMode === 'hotspots' ? 'default' : 'outline'}
+                onClick={() => {
+                  if (!selectedStep) {
+                    toast.error('Please select a step first');
+                    return;
+                  }
+                  setViewMode('hotspots');
+                }}
+                className="flex-1"
+                disabled={!selectedStep}
+              >
+                Manage Hotspots
+              </Button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
+            {viewMode === 'create' ? (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
                 <Label className="mb-2 block">Step Image</Label>
@@ -453,6 +484,24 @@ const StepsPage = () => {
                 )}
               </div>
             </form>
+            ) : (
+              <div className="space-y-4">
+                {selectedStep && token ? (
+                  <HotspotEditor
+                    step={selectedStep}
+                    token={token}
+                    allSteps={steps}
+                    onHotspotsChange={(hotspots) => {
+                      console.log('Hotspots updated:', hotspots);
+                    }}
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-text-muted">Please select a step to manage hotspots</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
 

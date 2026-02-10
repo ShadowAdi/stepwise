@@ -40,6 +40,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
   const [selectedHotspot, setSelectedHotspot] = useState<HotspotResponse | null>(null);
   const [hotspotToDelete, setHotspotToDelete] = useState<HotspotResponse | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [clickedOnHotspot, setClickedOnHotspot] = useState(false);
   
   // Hotspot form state
   const [color, setColor] = useState('#3b82f6');
@@ -51,11 +52,22 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (!isEditMode || !imageRef.current) return;
     
+    // Prevent default to avoid text/image selection
+    e.preventDefault();
+    
+    // Check if clicking on existing hotspot
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-hotspot]')) {
+      setClickedOnHotspot(true);
+      return;
+    }
+    
     const rect = imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
     setIsDrawing(true);
+    setClickedOnHotspot(false);
     setDrawingHotspot({
       startX: x,
       startY: y,
@@ -65,7 +77,9 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
   };
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isDrawing || !drawingHotspot || !imageRef.current) return;
+    if (!isDrawing || !drawingHotspot || !imageRef.current || clickedOnHotspot) return;
+    
+    e.preventDefault();
     
     const rect = imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -79,16 +93,22 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
   };
 
   const handleMouseUp = async () => {
-    if (!isDrawing || !drawingHotspot) return;
+    if (!isDrawing || !drawingHotspot || clickedOnHotspot) {
+      setIsDrawing(false);
+      setDrawingHotspot(null);
+      setClickedOnHotspot(false);
+      return;
+    }
     
     const width = Math.abs(drawingHotspot.currentX - drawingHotspot.startX);
     const height = Math.abs(drawingHotspot.currentY - drawingHotspot.startY);
     
-    // Minimum size check
-    if (width < 2 || height < 2) {
+    // Minimum size check (reduced to 0.5% for easier drawing)
+    if (width < 0.5 || height < 0.5) {
       toast.error('Hotspot too small. Draw a larger area.');
       setIsDrawing(false);
       setDrawingHotspot(null);
+      setClickedOnHotspot(false);
       return;
     }
     
@@ -122,6 +142,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
     
     setIsDrawing(false);
     setDrawingHotspot(null);
+    setClickedOnHotspot(false);
   };
 
   const confirmDeleteHotspot = async () => {
@@ -224,25 +245,39 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
 
       <div
         ref={imageRef}
-        className="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-border"
+        className="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-border select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        style={{ cursor: isEditMode ? 'crosshair' : 'default' }}
+        onMouseLeave={() => {
+          if (isDrawing) {
+            setIsDrawing(false);
+            setDrawingHotspot(null);
+          }
+        }}
+        style={{ cursor: isEditMode ? 'crosshair' : 'default', userSelect: 'none' }}
       >
         <Image
           src={step.imageUrl}
           alt={step.title || 'Step'}
           fill
-          className="object-contain"
+          className="object-contain pointer-events-none select-none"
+          draggable={false}
         />
         
         {/* Render existing hotspots */}
         {hotspots.map((hotspot) => (
           <div
             key={hotspot.id}
-            className="absolute cursor-pointer hover:opacity-75 transition-opacity group"
+            data-hotspot="true"
+            className="absolute cursor-pointer hover:opacity-75 transition-opacity group pointer-events-auto"
             style={getHotspotStyle(hotspot)}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              if (isEditMode) {
+                setClickedOnHotspot(true);
+              }
+            }}
             onClick={(e) => {
               if (!isEditMode) return;
               e.stopPropagation();
