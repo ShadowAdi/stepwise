@@ -62,22 +62,23 @@ const StepsPage = () => {
 
   useEffect(() => {
     const fetchSteps = async () => {
-      if (!token || !demoId) return;
-
-      const result = await getAllSteps(demoId, token);
+      if (!token || !demoId) {
+        return
+      }
+      const result = await getAllSteps(demoId, token)
       if (result.success && result.data) {
-        const sortedSteps = result.data.sort((a, b) => parseInt(a.position) - parseInt(b.position));
-        setSteps(sortedSteps);
+        const sortedSteps = result.data.sort((a, b) => parseInt(a.position) - parseInt(b.position))
+        setSteps(sortedSteps)
       } else {
         console.error(!result.success ? result.error : 'Failed to load steps')
         toast.error(!result.success ? result.error : 'Failed to load steps');
       }
-    };
+    }
 
     if (isAuthenticated && token) {
-      fetchSteps();
+      fetchSteps()
     }
-  }, [demoId, token, isAuthenticated]);
+  }, [demoId, token, isAuthenticated])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,17 +86,17 @@ const StepsPage = () => {
 
     try {
       toast.loading('Uploading image...');
-      
+
       // Delete old image if it exists and we're changing it
       if (uploadedImage && oldImageUrl) {
         await deleteStepImage(oldImageUrl);
       }
-      
+
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const result = await uploadStepImage(formData);
-      
+
       if (result.success && result.data) {
         setUploadedImage(result.data.publicUrl);
         toast.dismiss();
@@ -193,7 +194,7 @@ const StepsPage = () => {
     if (result.success) {
       // Delete the image from storage
       await deleteStepImage(stepToDelete.imageUrl);
-      
+
       setSteps(prevSteps => prevSteps.filter(step => step.id !== stepToDelete.id));
       if (selectedStep?.id === stepToDelete.id) {
         setSelectedStep(null);
