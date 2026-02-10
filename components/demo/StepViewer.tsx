@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { StepResponse, HotspotResponse } from '@/types';
 import { HotspotViewer } from '@/components/demo/HotspotViewer';
 import { getHotspotsByStepId } from '@/actions/hotspot/hotspot.action';
+import { toast } from 'sonner';
 
 interface StepViewerProps {
   steps: StepResponse[];
@@ -74,12 +75,28 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
   };
 
   const handleHotspotClick = (targetStepId: string | null) => {
-    if (!targetStepId) return;
+    if (!targetStepId) {
+      console.log('No target step ID provided');
+      return;
+    }
+    
+    console.log('Attempting to navigate to step:', targetStepId);
+    console.log('Available steps:', steps.map(s => ({ id: s.id, position: s.position, title: s.title })));
     
     const targetIndex = steps.findIndex(step => step.id === targetStepId);
+    console.log('Found target index:', targetIndex);
+    
     if (targetIndex !== -1) {
+      const targetStep = steps[targetIndex];
+      console.log(`Navigating from step ${currentStepIndex + 1} to step ${targetIndex + 1}`);
+      toast.success(`Navigating to Step ${targetStep.position}: ${targetStep.title}`);
       setCurrentStepIndex(targetIndex);
       setIsPlaying(false); // Stop auto-play when navigating via hotspot
+    } else {
+      console.error('Target step not found:', targetStepId);
+      console.error('Available step IDs:', steps.map(s => s.id));
+      // Show a toast that navigation failed
+      toast.error('Could not navigate to target step. The step may not exist in this demo.');
     }
   };
 
@@ -211,6 +228,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
           {currentStep.description}
         </p>
         
+        {/* Debug Panel - Shows hotspot information */}
         {hotspots.length > 0 && (
           <div className="mt-6 pt-6 border-t border-gray-200">
             <h5 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
@@ -219,9 +237,36 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
               </svg>
               Interactive Hotspots ({hotspots.length})
             </h5>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mb-3">
               Click on the highlighted areas in the image to explore different parts or navigate to related steps.
             </p>
+            
+            {/* Debug info */}
+            <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-semibold text-gray-700">Hotspot Details (Debug):</p>
+              {hotspots.map((hotspot, idx) => {
+                const targetStep = hotspot.targetStepId 
+                  ? steps.find(s => s.id === hotspot.targetStepId)
+                  : null;
+                return (
+                  <div key={hotspot.id} className="text-xs text-gray-600 bg-white p-2 rounded border">
+                    <div><strong>Hotspot {idx + 1}:</strong></div>
+                    <div>• Tooltip: {hotspot.tooltipText || 'None'}</div>
+                    <div>• Target Step ID: {hotspot.targetStepId || 'None'}</div>
+                    {hotspot.targetStepId && (
+                      <div>• Target: {targetStep ? `Step ${targetStep.position}: ${targetStep.title}` : '⚠️ Step not found!'}</div>
+                    )}
+                    <div>• Color: <span style={{ backgroundColor: hotspot.color, padding: '2px 8px', borderRadius: '3px' }}>{hotspot.color}</span></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        
+        {hotspots.length === 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
+            No hotspots on this step
           </div>
         )}
       </div>

@@ -332,7 +332,7 @@ export default function ViewDemoPage() {
             ) : showSteps && demo.steps ? (
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-sm p-4 border border-gray-200">
-                  <StepViewer steps={demo.steps} />
+                  <StepViewer steps={demo.steps.sort((a, b) => parseInt(a.position) - parseInt(b.position))} />
                 </div>
                 <div className="flex justify-center pt-4">
                   <Button 

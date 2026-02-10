@@ -17,11 +17,21 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
   const imageRef = useRef<HTMLDivElement>(null);
 
   const handleHotspotClick = (hotspot: HotspotResponse) => {
+    console.log('Hotspot clicked:', {
+      hotspotId: hotspot.id,
+      targetStepId: hotspot.targetStepId,
+      tooltipText: hotspot.tooltipText,
+      color: hotspot.color
+    });
+    
     setClickedHotspot(hotspot.id);
     
     // Navigate immediately if target step exists
     if (hotspot.targetStepId) {
+      console.log('Calling onHotspotClick with targetStepId:', hotspot.targetStepId);
       onHotspotClick?.(hotspot.targetStepId);
+    } else {
+      console.log('Hotspot has no targetStepId, showing tooltip only');
     }
     
     // Clear clicked state after animation
