@@ -14,7 +14,17 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from '@/actions/steps/steps.action';
 import { StepResponse } from '@/types/step';
-import { uploadStepImage } from '@/actions/upload/upload.action';
+import { uploadStepImage, deleteStepImage } from '@/actions/upload/upload.action';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const stepSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -35,6 +45,8 @@ const StepsPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stepToDelete, setStepToDelete] = useState<StepResponse | null>(null);
+  const [oldImageUrl, setOldImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<StepFormData>({
@@ -73,6 +85,11 @@ const StepsPage = () => {
 
     try {
       toast.loading('Uploading image...');
+      
+      // Delete old image if it exists and we're changing it
+      if (uploadedImage && oldImageUrl) {
+        await deleteStepImage(oldImageUrl);
+      }
       
       const formData = new FormData();
       formData.append('file', file);
@@ -121,9 +138,18 @@ const StepsPage = () => {
               step.id === editingStepId ? result.data! : step
             )
           );
+          // Update preview if this is the selected step
+          if (selectedStep?.id === editingStepId) {
+            setSelectedStep(result.data);
+          }
+          // Delete old image if it was changed
+          if (oldImageUrl && oldImageUrl !== uploadedImage) {
+            await deleteStepImage(oldImageUrl);
+          }
           toast.success('Step updated successfully');
           setIsEditMode(false);
           setEditingStepId(null);
+          setOldImageUrl(null);
         } else {
           console.error(!result.success ? result.error : 'Failed to update step')
           toast.error(!result.success ? result.error : 'Failed to update step');
@@ -148,6 +174,7 @@ const StepsPage = () => {
       }
 
       setUploadedImage(null);
+      setOldImageUrl(null);
       reset();
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -159,26 +186,31 @@ const StepsPage = () => {
     }
   };
 
-  const handleDeleteStep = async (stepId: string) => {
-    if (!token) {
-      toast.error('Authentication required');
-      return;
-    }
+  const confirmDelete = async () => {
+    if (!stepToDelete || !token) return;
 
-    if (!confirm('Are you sure you want to delete this step?')) {
-      return;
-    }
-
-    const result = await deleteStep(stepId, token);
+    const result = await deleteStep(stepToDelete.id, token);
     if (result.success) {
-      setSteps(prevSteps => prevSteps.filter(step => step.id !== stepId));
-      if (selectedStep?.id === stepId) {
+      // Delete the image from storage
+      await deleteStepImage(stepToDelete.imageUrl);
+      
+      setSteps(prevSteps => prevSteps.filter(step => step.id !== stepToDelete.id));
+      if (selectedStep?.id === stepToDelete.id) {
         setSelectedStep(null);
       }
       toast.success('Step deleted successfully');
     } else {
       toast.error(result.error || 'Failed to delete step');
     }
+    setStepToDelete(null);
+  };
+
+  const handleDeleteStep = (step: StepResponse) => {
+    if (!token) {
+      toast.error('Authentication required');
+      return;
+    }
+    setStepToDelete(step);
   };
 
   const handleEditStep = (step: StepResponse) => {
@@ -187,6 +219,7 @@ const StepsPage = () => {
     setValue('title', step.title || '');
     setValue('description', step.description || '');
     setUploadedImage(step.imageUrl);
+    setOldImageUrl(step.imageUrl); // Store the old image URL
     setSelectedStep(step);
   };
 
@@ -195,6 +228,7 @@ const StepsPage = () => {
     setEditingStepId(null);
     reset();
     setUploadedImage(null);
+    setOldImageUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -304,7 +338,7 @@ const StepsPage = () => {
                       variant="outline"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteStep(step.id);
+                        handleDeleteStep(step);
                       }}
                       className="flex-1 text-xs text-red-500 hover:text-red-600"
                     >
@@ -472,6 +506,23 @@ const StepsPage = () => {
           </div>
         </section>
       </div>
+
+      <AlertDialog open={!!stepToDelete} onOpenChange={(open) => !open && setStepToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Step</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this step? This action cannot be undone and will permanently delete the step and its image.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

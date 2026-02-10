@@ -8,6 +8,51 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 // Create a Supabase client with service role (bypasses RLS)
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+export async function deleteStepImage(imageUrl: string) {
+  try {
+    if (!imageUrl) {
+      return {
+        success: false,
+        error: 'No image URL provided'
+      };
+    }
+
+    // Extract the file path from the public URL
+    const urlParts = imageUrl.split('/storage/v1/object/public/step-image/');
+    if (urlParts.length < 2) {
+      return {
+        success: false,
+        error: 'Invalid image URL'
+      };
+    }
+
+    const filePath = urlParts[1];
+
+    const { error } = await supabaseAdmin.storage
+      .from('step-image')
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Delete error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    return {
+      success: true,
+      data: { message: 'Image deleted successfully' }
+    };
+  } catch (error) {
+    console.error('Delete error:', error);
+    return {
+      success: false,
+      error: 'Failed to delete image'
+    };
+  }
+}
+
 export async function uploadStepImage(formData: FormData) {
   try {
     const file = formData.get('file') as File;
