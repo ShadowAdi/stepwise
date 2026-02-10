@@ -139,7 +139,6 @@ const StepsPage = () => {
               step.id === editingStepId ? result.data! : step
             )
           );
-          // Update preview if this is the selected step
           if (selectedStep?.id === editingStepId) {
             setSelectedStep(result.data);
           }
