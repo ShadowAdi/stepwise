@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useRef, MouseEvent } from 'react';
+import { useState, useRef, MouseEvent, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StepResponse, HotspotResponse, CreateHotspotDTO } from '@/types';
-import { createHotspot, deleteHotspot, updateHotspot } from '@/actions/hotspot/hotspot.action';
+import { createHotspot, deleteHotspot, updateHotspot, getHotspotsByStepId } from '@/actions/hotspot/hotspot.action';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -48,6 +48,23 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
   const [targetStepId, setTargetStepId] = useState('');
   
   const imageRef = useRef<HTMLDivElement>(null);
+
+  // Fetch hotspots when step changes
+  useEffect(() => {
+    const fetchHotspots = async () => {
+      if (!step?.id) return;
+      
+      const result = await getHotspotsByStepId(step.id, token);
+      if (result.success && result.data) {
+        setHotspots(result.data);
+        onHotspotsChange?.(result.data);
+      } else {
+        setHotspots([]);
+      }
+    };
+
+    fetchHotspots();
+  }, [step?.id, token]);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (!isEditMode || !imageRef.current) return;
