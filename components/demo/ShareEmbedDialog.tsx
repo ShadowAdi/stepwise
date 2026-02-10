@@ -22,8 +22,8 @@ interface ShareEmbedDialogProps {
 }
 
 export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: ShareEmbedDialogProps) => {
-  const [embedWidth, setEmbedWidth] = useState('80');
-  const [embedHeight, setEmbedHeight] = useState('60');
+  const [embedWidth, setEmbedWidth] = useState('800');
+  const [embedHeight, setEmbedHeight] = useState('600');
   const [autoPlay, setAutoPlay] = useState(false);
   const [activeTab, setActiveTab] = useState<'share' | 'embed'>('share');
   const [shareUrl, setShareUrl] = useState('');
@@ -43,7 +43,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-3xl">
+      <AlertDialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-2xl">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +271,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
               <div>
                 <Label className="text-sm font-semibold mb-3 block">Embed Code</Label>
                 <div className="relative">
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs font-mono overflow-x-auto border border-gray-700">
+                  <pre className="bg-gray-900 text-gray-100 p-4 pr-24 rounded-lg text-xs font-mono overflow-x-auto border border-gray-700 max-h-32 whitespace-pre-wrap break-all">
                     {embedCode || 'Loading...'}
                   </pre>
                   <Button
@@ -299,25 +299,28 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                     {embedWidth}×{embedHeight}px
                   </span>
                 </h4>
-                <div 
-                  className="bg-white rounded-lg border border-gray-300 overflow-hidden mx-auto"
-                  style={{ 
-                    maxWidth: '100%',
-                    aspectRatio: `${embedWidth} / ${embedHeight}`,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  }}
-                >
-                  <div className="w-full h-full flex items-center justify-center text-white">
-                    <div className="text-center">
-                      <svg className="w-16 h-16 mx-auto mb-3 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-sm font-semibold opacity-90">
-                        {demoTitle}
-                      </p>
-                      <p className="text-xs opacity-70 mt-1">
-                        Interactive Demo
-                      </p>
+                <div className="w-full max-w-full overflow-hidden">
+                  <div 
+                    className="bg-white rounded-lg border border-gray-300 overflow-hidden mx-auto"
+                    style={{ 
+                      width: '100%',
+                      maxWidth: '600px',
+                      height: '300px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                    }}
+                  >
+                    <div className="w-full h-full flex items-center justify-center text-white">
+                      <div className="text-center px-4">
+                        <svg className="w-12 h-12 mx-auto mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <p className="text-sm font-semibold opacity-90 truncate">
+                          {demoTitle}
+                        </p>
+                        <p className="text-xs opacity-70 mt-1">
+                          Interactive Demo Preview
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
