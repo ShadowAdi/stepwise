@@ -18,20 +18,17 @@ export async function deleteStepImage(imageUrl: string) {
       };
     }
 
-    // Extract the file path from the public URL
-    const urlParts = imageUrl.split('/storage/v1/object/public/step-image/');
+    const urlParts = imageUrl.split("/storage/v1/object/public/step-image/")
     if (urlParts.length < 2) {
       return {
         success: false,
         error: 'Invalid image URL'
-      };
+      }
     }
 
-    const filePath = urlParts[1];
+    const filePath = urlParts[1]
 
-    const { error } = await supabaseAdmin.storage
-      .from('step-image')
-      .remove([filePath]);
+    const { error } = await supabase.storage.from("step-image").remove([filePath])
 
     if (error) {
       console.error('Delete error:', error);
