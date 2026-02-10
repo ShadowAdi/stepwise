@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { getDemoWithStepsCount, getDemoWithSteps, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
 import { DemoResponse, StepResponse } from "@/types";
@@ -26,6 +27,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.15
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 120, damping: 15 }
+  }
+};
 
 export default function ViewDemoPage() {
   const { token, user } = useAuth();
@@ -103,16 +124,30 @@ export default function ViewDemoPage() {
     if (!demo) return;
     const url = `${window.location.origin}/demo/${demo.slug}`;
     navigator.clipboard.writeText(url);
-    toast.success("Link copied to clipboard!");
+    toast.success("Link copied to clipboard! 🎉");
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <p className="mt-4 text-gray-600">Loading demo...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="inline-block h-12 w-12 rounded-full border-4 border-blue-200 border-t-blue-600 mb-4"
+          />
+          <motion.p 
+            className="text-lg font-semibold text-gray-700"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            Loading demo...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
@@ -122,59 +157,74 @@ export default function ViewDemoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.header 
+        className="bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-50 shadow-sm"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Button
-              variant="ghost"
-              onClick={() => router.push("/dashboard")}
-              className="rounded-sm"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Dashboard
-            </Button>
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/dashboard")}
+                className="rounded-lg cursor-pointer"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Dashboard
+              </Button>
+            </motion.div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="rounded-sm">
-                  Actions
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button variant="outline" className="rounded-lg cursor-pointer">
+                    Actions
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </Button>
+                </motion.div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/edit`)}>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/edit`)} className="cursor-pointer">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit Demo
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push(`/demo/${demo.slug}`)}>
+                <DropdownMenuItem onClick={() => router.push(`/demo/${demo.slug}`)} className="cursor-pointer">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                   Preview Demo
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleToggleVisibility}>
+                <DropdownMenuItem onClick={handleToggleVisibility} className="cursor-pointer">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                   Make {demo.isPublic ? 'Private' : 'Public'}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDuplicate}>
+                <DropdownMenuItem onClick={handleDuplicate} className="cursor-pointer">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   Duplicate
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={copyShareLink}>
+                <DropdownMenuItem onClick={copyShareLink} className="cursor-pointer">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                   </svg>
@@ -183,7 +233,7 @@ export default function ViewDemoPage() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={() => setDeleteDialogOpen(true)}
-                  className="text-red-600"
+                  className="text-red-600 cursor-pointer"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -194,182 +244,281 @@ export default function ViewDemoPage() {
             </DropdownMenu>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <motion.main 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Demo Header */}
-        <div className="bg-white rounded-sm shadow-sm border border-gray-200 p-8 mb-6">
-          <div className="flex items-start justify-between mb-4">
+        <motion.div 
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200 p-10 mb-8"
+          variants={itemVariants}
+        >
+          <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{demo.title}</h1>
-              <div className="flex items-center gap-3 text-sm text-gray-500">
-                <span className={`inline-flex items-center px-3 py-1 rounded-sm text-sm font-medium ${demo.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+              <motion.h1 
+                className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {demo.title}
+              </motion.h1>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <motion.span 
+                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold shadow-sm ${demo.isPublic ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800'}`}
+                  whileHover={{ scale: 1.05 }}
+                >
                   {demo.isPublic ? (
                     <>
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Public
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                       Private
                     </>
                   )}
-                </span>
-                <span>•</span>
-                <span>Created {new Date(demo.createdAt).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>Updated {new Date(demo.updatedAt).toLocaleDateString()}</span>
+                </motion.span>
+                <span className="font-medium">•</span>
+                <span className="font-medium">Created {new Date(demo.createdAt).toLocaleDateString()}</span>
+                <span className="font-medium">•</span>
+                <span className="font-medium">Updated {new Date(demo.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
 
           {demo.description && (
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <motion.p 
+              className="text-gray-700 text-lg leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               {demo.description}
-            </p>
+            </motion.p>
           )}
-        </div>
+        </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-          <Card className="rounded-sm">
-            <CardHeader className="pb-3">
-              <CardDescription className="text-xs">Total Steps</CardDescription>
-              <CardTitle className="text-3xl">{demo.stepsCount}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="text-xs text-gray-500">
-                {demo.stepsCount === 0 ? "No steps yet" : "Interactive steps"}
-              </p>
-            </CardContent>
-          </Card>
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8"
+          variants={containerVariants}
+        >
+          {[
+            { 
+              title: "Total Steps", 
+              value: demo.stepsCount, 
+              description: demo.stepsCount === 0 ? "No steps yet" : "Interactive steps",
+              icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+              gradient: "from-blue-500 to-cyan-500"
+            },
+            { 
+              title: "Demo Link", 
+              value: `/${demo.slug}`, 
+              description: "Share this link",
+              icon: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
+              gradient: "from-purple-500 to-pink-500",
+              isMono: true
+            },
+            { 
+              title: "Status", 
+              value: demo.stepsCount === 0 ? "Draft" : "Ready", 
+              description: demo.stepsCount === 0 ? "Add steps to publish" : "Demo is complete",
+              icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+              gradient: demo.stepsCount === 0 ? "from-amber-500 to-orange-500" : "from-green-500 to-emerald-500"
+            }
+          ].map((stat, idx) => (
+            <motion.div
+              key={stat.title}
+              variants={itemVariants}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-shadow bg-white/80 backdrop-blur-sm overflow-hidden cursor-default">
+                <div className={`h-2 bg-gradient-to-r ${stat.gradient}`} />
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <CardDescription className="text-xs font-semibold uppercase tracking-wider">{stat.title}</CardDescription>
+                    <div className={`p-2 rounded-lg bg-gradient-to-r ${stat.gradient}`}>
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
+                      </svg>
+                    </div>
+                  </div>
+                  <CardTitle className={`text-3xl font-bold ${stat.isMono ? 'font-mono text-xl' : ''}`}>
+                    {stat.value}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-xs text-gray-600 font-medium">
+                    {stat.description}
+                  </p>
+                  {stat.title === "Demo Link" && (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={copyShareLink}
+                        className="h-8 text-xs rounded-lg mt-2 cursor-pointer"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Link
+                      </Button>
+                    </motion.div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
 
-          <Card className="rounded-sm">
-            <CardHeader className="pb-3">
-              <CardDescription className="text-xs">Demo Link</CardDescription>
-              <div className="flex items-center gap-2">
-                <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
-                  /{demo.slug}
-                </code>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={copyShareLink}
-                className="h-7 text-xs rounded-sm"
-              >
-                Copy Link
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-sm">
-            <CardHeader className="pb-3">
-              <CardDescription className="text-xs">Status</CardDescription>
-              <CardTitle className="text-lg">
-                {demo.stepsCount === 0 ? "Draft" : "Ready"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="text-xs text-gray-500">
-                {demo.stepsCount === 0 ? "Add steps to publish" : "Demo is complete"}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Steps Section */}
-        <Card className="rounded-sm">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Demo Steps</CardTitle>
-                <CardDescription>
-                  {demo.stepsCount === 0 
-                    ? "No steps added yet" 
-                    : `${demo.stepsCount} step${demo.stepsCount !== 1 ? 's' : ''} in this demo`}
-                </CardDescription>
-              </div>
-              {demo.stepsCount > 0 && (
-                <Button 
-                  onClick={() => setShowSteps(!showSteps)}
-                  variant="outline"
-                  className="rounded-sm"
-                >
-                  {showSteps ? 'Hide Steps' : 'View Steps'}
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {demo.stepsCount === 0 ? (
-              <div className="text-center py-12">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No steps yet</h3>
-                <p className="text-gray-500 mb-6">
-                  Add steps to create your interactive demo
-                </p>
-                <Button 
-                  className="rounded-sm"
-                  onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add Step
-                </Button>
-              </div>
-            ) : showSteps && demo.steps ? (
-              <div className="space-y-4">
-                <div className="bg-gray-50 rounded-sm p-4 border border-gray-200">
-                  <StepViewer steps={demo.steps.sort((a, b) => parseInt(a.position) - parseInt(b.position))} />
+        <motion.div variants={itemVariants}>
+          <Card className="rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden bg-white/80 backdrop-blur-sm py-0">
+            <CardHeader className="bg-linear-to-r pt-4 from-blue-500 to-purple-500 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-2xl">📚 Demo Steps</CardTitle>
+                  <CardDescription className="text-blue-100 mt-1">
+                    {demo.stepsCount === 0 
+                      ? "No steps added yet" 
+                      : `${demo.stepsCount} step${demo.stepsCount !== 1 ? 's' : ''} in this demo`}
+                  </CardDescription>
                 </div>
-                <div className="flex justify-center pt-4">
-                  <Button 
-                    className="rounded-sm"
-                    onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                {demo.stepsCount > 0 && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <Button 
+                      onClick={() => setShowSteps(!showSteps)}
+                      variant="outline"
+                      className="rounded-lg bg-white text-purple-600 hover:bg-blue-50 border-2 border-white cursor-pointer"
+                    >
+                      {showSteps ? (
+                        <>
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                          Hide Steps
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          View Steps
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              {demo.stepsCount === 0 ? (
+                <div className="text-center py-4">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                  >
+                    <svg className="w-20 h-20 text-gray-300 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    Manage Steps
-                  </Button>
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">No steps yet</h3>
+                  <p className="text-gray-500 mb-8 text-lg">
+                    Add steps to create your interactive demo
+                  </p>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg shadow-lg cursor-pointer"
+                      onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                    >
+                      <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add Your First Step
+                    </Button>
+                  </motion.div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">
-                  Click "View Steps" to preview your interactive demo
-                </p>
-                <Button 
-                  className="rounded-sm"
-                  onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
-                  variant="outline"
+              ) : showSteps && demo.steps ? (
+                <motion.div 
+                  className="space-y-6"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Manage Steps
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
+                    <StepViewer steps={demo.steps.sort((a, b) => parseInt(a.position) - parseInt(b.position))} />
+                  </div>
+                  <div className="flex justify-center pt-4">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button 
+                        className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-5 shadow-lg cursor-pointer"
+                        onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                      >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Manage Steps
+                      </Button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-6 text-lg">
+                    Click "View Steps" to preview your interactive demo
+                  </p>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      className="rounded-xl cursor-pointer"
+                      onClick={() => router.push(`/dashboard/${demo.id}/steps`)}
+                      variant="outline"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Manage Steps
+                    </Button>
+                  </motion.div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.main>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-sm">
+        <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -378,10 +527,10 @@ export default function ViewDemoPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-sm">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg cursor-pointer">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 rounded-sm"
+              className="bg-red-600 hover:bg-red-700 rounded-lg cursor-pointer"
             >
               Delete
             </AlertDialogAction>
