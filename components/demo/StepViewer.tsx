@@ -130,6 +130,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
             hotspots={hotspots}
             onHotspotClick={handleHotspotClick}
             isLoading={isLoading}
+            allSteps={steps}
           />
           
           <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 max-w-md">

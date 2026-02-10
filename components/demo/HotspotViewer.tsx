@@ -10,12 +10,25 @@ interface HotspotViewerProps {
   hotspots: HotspotResponse[];
   onHotspotClick?: (targetStepId: string | null) => void;
   isLoading?: boolean;
+  allSteps?: StepResponse[]; // To determine navigation direction
 }
 
-export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: HotspotViewerProps) => {
+export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSteps = [] }: HotspotViewerProps) => {
   const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null);
   const [clickedHotspot, setClickedHotspot] = useState<string | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+
+  // Determine if a hotspot navigates forward or backward
+  const getNavigationDirection = (hotspot: HotspotResponse): 'forward' | 'backward' | 'none' => {
+    if (!hotspot.targetStepId || !allSteps.length) return 'none';
+    
+    const currentStepIndex = allSteps.findIndex(s => s.id === step.id);
+    const targetStepIndex = allSteps.findIndex(s => s.id === hotspot.targetStepId);
+    
+    if (currentStepIndex === -1 || targetStepIndex === -1) return 'none';
+    
+    return targetStepIndex > currentStepIndex ? 'forward' : 'backward';
+  };
 
   const handleHotspotClick = (hotspot: HotspotResponse) => {
     console.log('Hotspot clicked:', {
@@ -214,21 +227,46 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
                     exit={{ scale: 0, rotate: 180 }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
-                    <motion.svg 
-                      className="w-10 h-10 text-white drop-shadow-2xl" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={3.5} 
-                        d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" 
-                      />
-                    </motion.svg>
+                    {(() => {
+                      const direction = getNavigationDirection(hotspot);
+                      if (direction === 'backward') {
+                        return (
+                          <motion.svg 
+                            className="w-10 h-10 text-white drop-shadow-2xl" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ x: [0, -5, 0] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={3.5} 
+                              d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" 
+                            />
+                          </motion.svg>
+                        );
+                      } else {
+                        return (
+                          <motion.svg 
+                            className="w-10 h-10 text-white drop-shadow-2xl" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={3.5} 
+                              d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" 
+                            />
+                          </motion.svg>
+                        );
+                      }
+                    })()}
                   </motion.div>
                 )}
               </AnimatePresence>
