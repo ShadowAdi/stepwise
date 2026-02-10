@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { getDemoWithStepsCount, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
-import { DemoResponse } from "@/types";
+import { getAllSteps } from "@/actions/steps/steps.action";
+import { DemoResponse, StepResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { StepViewer } from "@/components/demo/StepViewer";
 
 export default function ViewDemoPage() {
   const { token, user } = useAuth();
@@ -33,6 +35,7 @@ export default function ViewDemoPage() {
   const slug = params.slug as string;
 
   const [demo, setDemo] = useState<(DemoResponse & { stepsCount: number }) | null>(null);
+  const [steps, setSteps] = useState<StepResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -42,6 +45,15 @@ export default function ViewDemoPage() {
 
     if (result.success) {
       setDemo(result.data);
+      
+      // Fetch steps if demo exists
+      if (result.data) {
+        const stepsResult = await getAllSteps(result.data.id, token || '');
+        if (stepsResult.success && stepsResult.data) {
+          const sortedSteps = stepsResult.data.sort((a, b) => parseInt(a.position) - parseInt(b.position));
+          setSteps(sortedSteps);
+        }
+      }
     } else {
       toast.error(result.error);
       router.push("/dashboard");
@@ -151,6 +163,13 @@ export default function ViewDemoPage() {
                     </svg>
                     Edit Demo
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/steps`)}>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Manage Steps
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleToggleVisibility}>
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -277,42 +296,10 @@ export default function ViewDemoPage() {
           </Card>
         </div>
 
-        {/* Steps Section - Coming Soon */}
-        <Card className="rounded-sm">
-          <CardHeader>
-            <CardTitle>Demo Steps</CardTitle>
-            <CardDescription>
-              Interactive steps will be displayed here
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {demo.stepsCount === 0 ? (
-              <div className="text-center py-12">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No steps yet</h3>
-                <p className="text-gray-500 mb-6">
-                  Add steps to create your interactive demo
-                </p>
-                {isOwner && (
-                  <Button className="rounded-sm" disabled>
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Step (Coming Soon)
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">
-                  Steps functionality coming soon...
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Steps Section */}
+        <div>
+          <StepViewer steps={steps} />
+        </div>
       </main>
 
       {/* Delete Confirmation Dialog */}
