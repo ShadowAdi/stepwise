@@ -79,6 +79,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
     const targetIndex = steps.findIndex(step => step.id === targetStepId);
     if (targetIndex !== -1) {
       setCurrentStepIndex(targetIndex);
+      setIsPlaying(false); // Stop auto-play when navigating via hotspot
     }
   };
 

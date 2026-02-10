@@ -19,25 +19,24 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
   const handleHotspotClick = (hotspot: HotspotResponse) => {
     setClickedHotspot(hotspot.id);
     
-    // Visual feedback
+    // Navigate immediately if target step exists
+    if (hotspot.targetStepId) {
+      onHotspotClick?.(hotspot.targetStepId);
+    }
+    
+    // Clear clicked state after animation
     setTimeout(() => {
       setClickedHotspot(null);
-      if (hotspot.targetStepId) {
-        onHotspotClick?.(hotspot.targetStepId);
-      }
     }, 300);
   };
 
-  const getHotspotStyles = (hotspot: HotspotResponse, isActive: boolean = false) => {
+  const getHotspotStyles = (hotspot: HotspotResponse) => {
     const baseStyles = {
       position: 'absolute' as const,
       left: `${parseFloat(hotspot.x)}%`,
       top: `${parseFloat(hotspot.y)}%`,
       width: `${parseFloat(hotspot.width)}%`,
       height: `${parseFloat(hotspot.height)}%`,
-      backgroundColor: hotspot.color,
-      cursor: hotspot.targetStepId ? 'pointer' : 'help',
-      transition: 'all 0.3s ease',
     };
 
     return baseStyles;
@@ -72,7 +71,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
         <div key={hotspot.id} className="absolute" style={getHotspotStyles(hotspot)}>
           {/* Hotspot Area */}
           <div
-            className="w-full h-full relative group"
+            className="w-full h-full relative group cursor-pointer"
             style={{
               opacity: getOpacity(hotspot.id),
               backgroundColor: hotspot.color,
@@ -82,7 +81,10 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
             }}
             onMouseEnter={() => setHoveredHotspot(hotspot.id)}
             onMouseLeave={() => setHoveredHotspot(null)}
-            onClick={() => handleHotspotClick(hotspot)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleHotspotClick(hotspot);
+            }}
           >
             {/* Pulse Animation */}
             {hoveredHotspot !== hotspot.id && clickedHotspot !== hotspot.id && (
@@ -137,7 +139,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
 
             {/* Click Icon for navigable hotspots */}
             {hotspot.targetStepId && hoveredHotspot === hotspot.id && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <svg 
                   className="w-8 h-8 text-white drop-shadow-lg animate-bounce" 
                   fill="none" 
@@ -156,7 +158,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading }: Hot
 
             {/* Info Icon for non-navigable hotspots */}
             {!hotspot.targetStepId && hotspot.tooltipText && hoveredHotspot === hotspot.id && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <svg 
                   className="w-8 h-8 text-white drop-shadow-lg" 
                   fill="none" 
