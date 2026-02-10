@@ -123,11 +123,8 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Main Step Display */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {/* Step Content */}
         <div className="relative">
-          {/* Image with Hotspots */}
           <HotspotViewer
             step={currentStep}
             hotspots={hotspots}
@@ -135,7 +132,6 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
             isLoading={isLoading}
           />
           
-          {/* Step Info Overlay */}
           <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 max-w-md">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded">
@@ -157,7 +153,6 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
           </div>
         </div>
 
-        {/* Controls */}
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -219,7 +214,6 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
         </div>
       </div>
 
-      {/* Step Details */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-3">
           {currentStep.title}
@@ -228,7 +222,6 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
           {currentStep.description}
         </p>
         
-        {/* Debug Panel - Shows hotspot information */}
         {hotspots.length > 0 && (
           <div className="mt-6 pt-6 border-t border-gray-200">
             <h5 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
@@ -241,8 +234,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
               Click on the highlighted areas in the image to explore different parts or navigate to related steps.
             </p>
             
-            {/* Debug info */}
-            <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
+            {/* <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
               <p className="text-xs font-semibold text-gray-700">Hotspot Details (Debug):</p>
               {hotspots.map((hotspot, idx) => {
                 const targetStep = hotspot.targetStepId 
@@ -260,7 +252,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
                   </div>
                 );
               })}
-            </div>
+            </div> */}
           </div>
         )}
         
@@ -271,7 +263,6 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
         )}
       </div>
 
-      {/* Step Thumbnails */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h4 className="text-sm font-semibold text-gray-900 mb-4">All Steps</h4>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
