@@ -41,7 +41,6 @@ const StepsPage = () => {
     resolver: zodResolver(stepSchema),
   });
 
-  // Check authentication
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast.error('Please login to access this page');
@@ -49,7 +48,6 @@ const StepsPage = () => {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Fetch all steps for the demo
   useEffect(() => {
     const fetchSteps = async () => {
       if (!token || !demoId) return;
