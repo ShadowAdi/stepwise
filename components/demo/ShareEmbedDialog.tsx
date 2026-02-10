@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -22,13 +22,19 @@ interface ShareEmbedDialogProps {
 }
 
 export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: ShareEmbedDialogProps) => {
-  const [embedWidth, setEmbedWidth] = useState('800');
-  const [embedHeight, setEmbedHeight] = useState('600');
+  const [embedWidth, setEmbedWidth] = useState('80');
+  const [embedHeight, setEmbedHeight] = useState('60');
   const [autoPlay, setAutoPlay] = useState(false);
   const [activeTab, setActiveTab] = useState<'share' | 'embed'>('share');
+  const [shareUrl, setShareUrl] = useState('');
 
-  const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/demo/${demoSlug}`;
-  const embedCode = `<iframe src="${shareUrl}${autoPlay ? '?autoplay=true' : ''}" width="${embedWidth}" height="${embedHeight}" frameborder="0" allowfullscreen style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>`;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(`${window.location.origin}/demo/${demoSlug}`);
+    }
+  }, [demoSlug]);
+
+  const embedCode = shareUrl ? `<iframe src="${shareUrl}${autoPlay ? '?autoplay=true' : ''}" width="${embedWidth}" height="${embedHeight}" frameborder="0" allowfullscreen style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></iframe>` : '';
 
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
@@ -115,12 +121,13 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 <Label className="text-sm font-semibold mb-3 block">Public Demo URL</Label>
                 <div className="flex gap-2">
                   <Input
-                    value={shareUrl}
+                    value={shareUrl || 'Loading...'}
                     readOnly
                     className="flex-1 font-mono text-sm bg-gray-50"
                   />
                   <Button
-                    onClick={() => copyToClipboard(shareUrl, 'Link copied to clipboard! 🎉')}
+                    onClick={() => shareUrl && copyToClipboard(shareUrl, 'Link copied to clipboard! 🎉')}
+                    disabled={!shareUrl}
                     className="cursor-pointer whitespace-nowrap"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +146,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 <h4 className="text-sm font-semibold mb-3 text-gray-900">Link Preview</h4>
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
@@ -161,9 +168,11 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                     variant="outline"
                     size="sm"
                     onClick={() => {
+                      if (!shareUrl) return;
                       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(demoTitle)}&url=${encodeURIComponent(shareUrl)}`;
                       window.open(twitterUrl, '_blank');
                     }}
+                    disabled={!shareUrl}
                     className="cursor-pointer flex-1"
                   >
                     <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -175,9 +184,11 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                     variant="outline"
                     size="sm"
                     onClick={() => {
+                      if (!shareUrl) return;
                       const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
                       window.open(linkedInUrl, '_blank');
                     }}
+                    disabled={!shareUrl}
                     className="cursor-pointer flex-1"
                   >
                     <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -189,9 +200,11 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                     variant="outline"
                     size="sm"
                     onClick={() => {
+                      if (!shareUrl) return;
                       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
                       window.open(facebookUrl, '_blank');
                     }}
+                    disabled={!shareUrl}
                     className="cursor-pointer flex-1"
                   >
                     <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -245,7 +258,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                         onChange={(e) => setAutoPlay(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       <span className="ms-3 text-sm font-medium text-gray-700">
                         {autoPlay ? 'On' : 'Off'}
                       </span>
@@ -259,11 +272,12 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 <Label className="text-sm font-semibold mb-3 block">Embed Code</Label>
                 <div className="relative">
                   <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs font-mono overflow-x-auto border border-gray-700">
-                    {embedCode}
+                    {embedCode || 'Loading...'}
                   </pre>
                   <Button
                     size="sm"
-                    onClick={() => copyToClipboard(embedCode, 'Embed code copied! 🎉')}
+                    onClick={() => embedCode && copyToClipboard(embedCode, 'Embed code copied! 🎉')}
+                    disabled={!embedCode}
                     className="absolute top-2 right-2 cursor-pointer"
                   >
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
