@@ -43,7 +43,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <AlertDialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-2xl">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,27 +301,32 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 </h4>
                 <div className="w-full max-w-full overflow-hidden">
                   <div 
-                    className="bg-white rounded-lg border border-gray-300 overflow-hidden mx-auto"
+                    className="bg-white rounded-lg border border-gray-300 overflow-hidden mx-auto shadow-sm"
                     style={{ 
                       width: '100%',
-                      maxWidth: '600px',
-                      height: '300px',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      maxWidth: '900px',
+                      height: '600px',
                     }}
                   >
-                    <div className="w-full h-full flex items-center justify-center text-white">
-                      <div className="text-center px-4">
-                        <svg className="w-12 h-12 mx-auto mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        <p className="text-sm font-semibold opacity-90 truncate">
-                          {demoTitle}
-                        </p>
-                        <p className="text-xs opacity-70 mt-1">
-                          Interactive Demo Preview
-                        </p>
+                    {shareUrl ? (
+                      <iframe 
+                        src={`${shareUrl}${autoPlay ? '?autoplay=true' : ''}`}
+                        className="w-full h-full"
+                        style={{ border: 'none' }}
+                        title="Demo preview"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <div className="text-center px-4">
+                          <svg className="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-sm font-semibold text-gray-600">
+                            Loading preview...
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -71,7 +71,7 @@ export default function ViewDemoPage() {
       setSteps(demoSteps || []);
     } else {
       toast.error(!result.success ? result.error : 'Failed to load demo');
-      router.push("/dashboard");
+      router.push("/");
     }
 
     setIsLoading(false);
@@ -175,13 +175,13 @@ export default function ViewDemoPage() {
             >
               <Button
                 variant="ghost"
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push(user ? "/dashboard" : "/")}
                 className="rounded-lg cursor-pointer"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Dashboard
+                Back to {user ? "Dashboard" : "Home"}
               </Button>
             </motion.div>
 
