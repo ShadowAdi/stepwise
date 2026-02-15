@@ -122,7 +122,7 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="relative">
           <HotspotViewer
@@ -133,63 +133,64 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
             allSteps={steps}
           />
           
-          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 max-w-md">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded">
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 lg:p-4 max-w-[calc(100%-1rem)] sm:max-w-md">
+            <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+              <span className="text-xs sm:text-sm font-semibold text-blue-600 bg-blue-50 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 Step {currentStep.position}
               </span>
               {isPlaying && (
-                <span className="flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
-                  <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse mr-1"></span>
-                  Auto-playing
+                <span className="flex items-center text-xs text-green-600 bg-green-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-600 rounded-full animate-pulse mr-0.5 sm:mr-1"></span>
+                  <span className="hidden sm:inline">Auto-playing</span>
+                  <span className="sm:hidden">Playing</span>
                 </span>
               )}
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-1">
+            <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1 line-clamp-2 break-words">
               {currentStep.title}
             </h3>
-            <p className="text-sm text-gray-600 line-clamp-3">
+            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 sm:line-clamp-3 break-words">
               {currentStep.description}
             </p>
           </div>
         </div>
 
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+        <div className="bg-gray-50 px-3 py-3 sm:px-6 sm:py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handlePrevious}
                 disabled={currentStepIndex === 0}
-                className="rounded-sm"
+                className="rounded-sm text-xs sm:text-sm px-2 sm:px-3"
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Previous
+                <span className="hidden sm:inline">Previous</span>
               </Button>
               
               <Button
                 variant={isPlaying ? "default" : "outline"}
                 size="sm"
                 onClick={togglePlay}
-                className="rounded-sm"
+                className="rounded-sm text-xs sm:text-sm px-2 sm:px-3"
               >
                 {isPlaying ? (
                   <>
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
                     </svg>
-                    Pause
+                    <span className="hidden sm:inline">Pause</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    {currentStepIndex >= steps.length - 1 ? 'Replay' : 'Play'}
+                    <span className="hidden sm:inline">{currentStepIndex >= steps.length - 1 ? 'Replay' : 'Play'}</span>
                   </>
                 )}
               </Button>
@@ -199,27 +200,27 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
                 size="sm"
                 onClick={handleNext}
                 disabled={currentStepIndex === steps.length - 1}
-                className="rounded-sm"
+                className="rounded-sm text-xs sm:text-sm px-2 sm:px-3"
               >
-                Next
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="hidden sm:inline">Next</span>
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600 font-medium">
+            <div className="text-xs sm:text-sm text-gray-600 font-medium">
               {currentStepIndex + 1} / {steps.length}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-3">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+        <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3 break-words">
           {currentStep.title}
         </h4>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
           {currentStep.description}
         </p>
         
@@ -264,9 +265,9 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h4 className="text-sm font-semibold text-gray-900 mb-4">All Steps</h4>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+        <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-3 sm:mb-4">All Steps</h4>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           {steps.map((step, index) => (
             <button
               key={step.id}
@@ -283,10 +284,10 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
                 fill
                 className="object-cover group-hover:scale-105 transition-transform"
               />
-              <div className={`absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex items-end p-2 ${
+              <div className={`absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex items-end p-1 sm:p-2 ${
                 currentStepIndex === index ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
               } transition-opacity`}>
-                <span className="text-white text-xs font-medium">
+                <span className="text-white text-[10px] sm:text-xs font-medium line-clamp-1 break-words">
                   {step.position}. {step.title}
                 </span>
               </div>

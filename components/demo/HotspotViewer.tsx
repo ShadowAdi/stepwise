@@ -190,27 +190,27 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
               <AnimatePresence>
                 {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (
                   <motion.div
-                    className="absolute z-30 px-4 py-3 text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
+                    className="absolute z-30 px-2 py-1.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-none"
                     style={{
                       bottom: '110%',
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      marginBottom: '12px',
+                      marginBottom: '8px',
                     }}
                     initial={{ opacity: 0, y: 10, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {hotspot.tooltipText || 'Click to navigate'}
+                    <span className="block truncate">{hotspot.tooltipText || 'Click to navigate'}</span>
                     
                     {/* Arrow */}
                     <div
-                      className="absolute w-3 h-3 bg-gray-900 transform rotate-45"
+                      className="absolute w-2 h-2 sm:w-3 sm:h-3 bg-gray-900 transform rotate-45"
                       style={{
-                        bottom: '-6px',
+                        bottom: '-4px',
                         left: '50%',
-                        marginLeft: '-6px',
+                        marginLeft: '-4px',
                       }}
                     />
                   </motion.div>
@@ -232,7 +232,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
                       if (direction === 'backward') {
                         return (
                           <motion.svg 
-                            className="w-10 h-10 text-white drop-shadow-2xl" 
+                            className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white drop-shadow-2xl" 
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
@@ -250,7 +250,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
                       } else {
                         return (
                           <motion.svg 
-                            className="w-10 h-10 text-white drop-shadow-2xl" 
+                            className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white drop-shadow-2xl" 
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
@@ -273,7 +273,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
 
               {/* Info Icon for non-navigable hotspots */}
               <AnimatePresence>
-                {!hotspot.targetStepId && hotspot.tooltipText && hoveredHotspot === hotspot.id && (
+              {!hotspot.targetStepId && hotspot.tooltipText && hoveredHotspot === hotspot.id && (
                   <motion.div 
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
                     initial={{ scale: 0, rotate: -180 }}
@@ -282,7 +282,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
                     <motion.svg 
-                      className="w-10 h-10 text-white drop-shadow-2xl" 
+                      className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white drop-shadow-2xl" 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -308,18 +308,19 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
       <AnimatePresence>
         {hotspots.length > 0 && !isLoading && (
           <motion.div 
-            className="absolute bottom-6 right-6 bg-blue-600 rounded-lg shadow-sm px-4 py-3 text-sm font-semibold text-white flex items-center gap-3 cursor-default"
+            className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-blue-600 rounded-lg shadow-sm px-2 py-1.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-white flex items-center gap-1.5 sm:gap-3 cursor-default"
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ delay: 0.3 }}
           >
             <motion.div 
-              className="w-3 h-3 bg-white rounded-full"
+              className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full"
               animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            {hotspots.length} hotspot{hotspots.length !== 1 ? 's' : ''} available
+            <span className="hidden sm:inline">{hotspots.length} hotspot{hotspots.length !== 1 ? 's' : ''} available</span>
+            <span className="sm:hidden">{hotspots.length}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -328,7 +329,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
       <AnimatePresence>
         {hotspots.length > 0 && !hoveredHotspot && !isLoading && (
           <motion.div 
-            className="absolute top-6 right-6 bg-blue-600 rounded-lg shadow-sm px-5 py-3 text-sm font-semibold text-white cursor-default"
+            className="hidden sm:block absolute top-4 right-4 lg:top-6 lg:right-6 bg-blue-600 rounded-lg shadow-sm px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-white cursor-default max-w-[200px] lg:max-w-none"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -337,6 +338,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
+              className="break-words"
             >
               ✨ Hover over highlighted areas to interact
             </motion.div>

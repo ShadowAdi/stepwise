@@ -312,20 +312,20 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
 
   return (
     <motion.div 
-      className="space-y-6"
+      className="space-y-4 sm:space-y-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <motion.h3 
-          className="text-xl font-bold text-text-primary"
+          className="text-base sm:text-lg lg:text-xl font-bold text-text-primary"
           initial={{ x: -20 }}
           animate={{ x: 0 }}
         >
           🎯 Hotspot Editor
         </motion.h3>
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2">
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -335,9 +335,9 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
               size="sm"
               onClick={createAutoNavigationHotspots}
               disabled={isCreatingAutoNav || !allSteps || allSteps.length <= 1}
-              className="cursor-pointer"
+              className="cursor-pointer text-xs sm:text-sm"
             >
-              {isCreatingAutoNav ? '⏳' : '🎠'} Auto Nav
+              {isCreatingAutoNav ? '⏳' : '🎠'} <span className="hidden sm:inline">Auto Nav</span>
             </Button>
           </motion.div>
           <motion.div
@@ -347,21 +347,23 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
             <Button
               variant={isEditMode ? 'default' : 'outline'}
               onClick={() => setIsEditMode(!isEditMode)}
-              className="cursor-pointer"
+              className="cursor-pointer text-xs sm:text-sm"
             >
               {isEditMode ? (
                 <>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Done Editing
+                  <span className="hidden sm:inline">Done Editing</span>
+                  <span className="sm:hidden">Done</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Add Hotspots
+                  <span className="hidden sm:inline">Add Hotspots</span>
+                  <span className="sm:hidden">Add</span>
                 </>
               )}
             </Button>
@@ -372,7 +374,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
       <AnimatePresence>
         {isEditMode && (
           <motion.div 
-            className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm space-y-4"
+            className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-xl border border-gray-200 shadow-sm space-y-3 sm:space-y-4"
             initial={{ opacity: 0, height: 0, y: -20 }}
             animate={{ opacity: 1, height: 'auto', y: 0 }}
             exit={{ opacity: 0, height: 0, y: -20 }}
@@ -392,29 +394,29 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
               </div>
             )}
             <motion.div 
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
               <div>
-                <Label className="text-sm font-semibold mb-2 block">Hotspot Color</Label>
-                <div className="flex items-center gap-3">
+                <Label className="text-xs sm:text-sm font-semibold mb-2 block">Hotspot Color</Label>
+                <div className="flex items-center gap-2 sm:gap-3">
                   <Input
                     type="color"
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className="h-12 w-20 cursor-pointer"
+                    className="h-10 sm:h-12 w-16 sm:w-20 cursor-pointer"
                   />
-                  <span className="text-sm text-text-muted font-mono">{color}</span>
+                  <span className="text-xs sm:text-sm text-text-muted font-mono">{color}</span>
                 </div>
               </div>
               <div>
-                <Label className="text-sm font-semibold mb-2 block">Link to Step (optional)</Label>
+                <Label className="text-xs sm:text-sm font-semibold mb-2 block">Link to Step (optional)</Label>
                 <select
                   value={targetStepId}
                   onChange={(e) => setTargetStepId(e.target.value)}
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
                 >
                   <option value="">No link</option>
                   {allSteps.filter(s => s.id !== step.id).map(s => (
@@ -430,12 +432,12 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
               animate={{ opacity: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Label className="text-sm font-semibold mb-2 block">Tooltip Text (optional)</Label>
+              <Label className="text-xs sm:text-sm font-semibold mb-2 block">Tooltip Text (optional)</Label>
               <Input
                 value={tooltipText}
                 onChange={(e) => setTooltipText(e.target.value)}
                 placeholder="Click here to continue..."
-                className="border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                className="border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm"
               />
             </motion.div>
             {editingHotspot ? (
@@ -606,18 +608,18 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
       <AnimatePresence>
         {hotspots.length > 0 && (
           <motion.div 
-            className="space-y-3"
+            className="space-y-2 sm:space-y-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
           >
-            <h4 className="font-bold text-sm text-text-primary flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h4 className="font-bold text-xs sm:text-sm text-text-primary flex items-center gap-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
               Hotspots Created ({hotspots.length})
             </h4>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {hotspots.map((hotspot, idx) => (
                 <motion.div
                   key={hotspot.id}

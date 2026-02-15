@@ -287,25 +287,25 @@ const StepsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-[1800px] mx-auto h-[calc(100vh-4rem)] flex flex-row gap-6">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6 lg:p-8">
+      <div className="max-w-[1800px] mx-auto flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Steps List Panel */}
         <motion.section 
-          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.25] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all w-full lg:flex-[0.25] max-h-[40vh] lg:max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
         >
-          <div className="p-6 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
               Steps ({steps.length})
             </h2>
-            <p className="text-sm text-gray-500 mt-1 font-medium">Drag to reorder steps</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Drag to reorder steps</p>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
             {steps.length === 0 ? (
               <motion.div 
                 className="text-center py-16"
@@ -346,10 +346,10 @@ const StepsPage = () => {
                         #{step.position}
                       </div>
                     </div>
-                    <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-3 line-clamp-2">
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-2 sm:mb-3 line-clamp-2 break-words">
                       {step.title}
                     </h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 sm:gap-2">
                       <motion.div
                         className="flex-1"
                         whileHover={{ scale: 1.05 }}
@@ -402,14 +402,14 @@ const StepsPage = () => {
 
         {/* Step Management Panel */}
         <motion.section 
-          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.45] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all w-full lg:flex-[0.45] max-h-[60vh] lg:max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
         >
-          <div className="p-6 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -457,7 +457,7 @@ const StepsPage = () => {
               </motion.div>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
             <AnimatePresence mode="wait">
               {viewMode === 'create' ? (
                 <motion.form 
@@ -481,7 +481,7 @@ const StepsPage = () => {
                     />
                     <motion.label
                       htmlFor="image-upload"
-                      className="block w-full h-72 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
+                      className="block w-full h-48 sm:h-60 lg:h-72 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -500,9 +500,9 @@ const StepsPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full">
+                        <div className="flex flex-col items-center justify-center h-full px-4">
                           <motion.svg 
-                            className="w-16 h-16 text-blue-400 mb-4" 
+                            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-blue-400 mb-3 sm:mb-4" 
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
@@ -511,8 +511,8 @@ const StepsPage = () => {
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </motion.svg>
-                          <p className="text-gray-700 font-bold text-lg">Click to upload an image</p>
-                          <p className="text-gray-500 text-sm mt-2">PNG, JPG, GIF up to 10MB</p>
+                          <p className="text-gray-700 font-bold text-sm sm:text-base lg:text-lg text-center">Click to upload an image</p>
+                          <p className="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-2 text-center">PNG, JPG, GIF up to 10MB</p>
                         </div>
                       )}
                     </motion.label>
@@ -568,9 +568,9 @@ const StepsPage = () => {
                     <Textarea
                       id="description"
                       placeholder="Enter step description"
-                      rows={8}
+                      rows={6}
                       {...register('description')}
-                      className={`border-2 ${errors.description ? 'border-red-400' : 'border-gray-300'} focus:border-blue-500`}
+                      className={`border-2 ${errors.description ? 'border-red-400' : 'border-gray-300'} focus:border-blue-500 text-sm`}
                     />
                     {errors.description && (
                       <motion.p 
@@ -675,21 +675,21 @@ const StepsPage = () => {
 
         {/* Live Preview Panel */}
         <motion.section 
-          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all flex-[0.3] h-full flex flex-col overflow-hidden"
+          className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all w-full lg:flex-[0.3] max-h-[50vh] lg:max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
         >
-          <div className="p-6 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
               Live Preview
             </h2>
           </div>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
             <AnimatePresence mode="wait">
               {selectedStep ? (
                 <motion.div 
@@ -717,10 +717,10 @@ const StepsPage = () => {
                         Step {selectedStep.position}
                       </motion.span>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 mb-4 leading-tight">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 mb-3 sm:mb-4 leading-tight break-words">
                       {selectedStep.title}
                     </h3>
-                    <p className="text-gray-700 leading-relaxed text-base">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base break-words">
                       {selectedStep.description}
                     </p>
                   </div>

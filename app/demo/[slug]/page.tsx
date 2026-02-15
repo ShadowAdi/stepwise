@@ -252,58 +252,58 @@ export default function ViewDemoPage() {
 
       {/* Main Content */}
       <motion.main 
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Demo Header */}
         <motion.div 
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 mb-8"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-10 mb-6 sm:mb-8"
           variants={itemVariants}
         >
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between mb-4 sm:mb-6">
             <div className="flex-1">
               <motion.h1 
-                className="text-5xl font-bold text-gray-900 mb-4"
+                className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 break-words"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
                 {demo.title}
               </motion.h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                 <motion.span 
-                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${demo.isPublic ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
+                  className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold ${demo.isPublic ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
                   whileHover={{ scale: 1.05 }}
                 >
                   {demo.isPublic ? (
                     <>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Public
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                       Private
                     </>
                   )}
                 </motion.span>
-                <span className="font-medium">•</span>
-                <span className="font-medium">Created {new Date(demo.createdAt).toLocaleDateString()}</span>
-                <span className="font-medium">•</span>
-                <span className="font-medium">Updated {new Date(demo.updatedAt).toLocaleDateString()}</span>
+                <span className="hidden sm:inline font-medium">•</span>
+                <span className="font-medium text-xs sm:text-sm">Created {new Date(demo.createdAt).toLocaleDateString()}</span>
+                <span className="hidden sm:inline font-medium">•</span>
+                <span className="font-medium text-xs sm:text-sm">Updated {new Date(demo.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
 
           {demo.description && (
             <motion.p 
-              className="text-gray-700 text-lg leading-relaxed"
+              className="text-gray-700 text-sm sm:text-base lg:text-lg leading-relaxed break-words"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -315,7 +315,7 @@ export default function ViewDemoPage() {
 
         {/* Stats */}
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
           variants={containerVariants}
         >
             {[
@@ -368,12 +368,12 @@ export default function ViewDemoPage() {
                       </svg>
                     </div>
                   </div>
-                  <CardTitle className={`text-3xl font-bold ${stat.isMono ? 'font-mono text-xl' : ''}`}>
+                  <CardTitle className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.isMono ? 'font-mono text-base sm:text-lg lg:text-xl' : ''} break-words`}>
                     {stat.value}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-xs text-gray-600 font-medium">
+                  <p className="text-xs text-gray-600 font-medium break-words">
                     {stat.description}
                   </p>
                   {stat.title === "Demo Link" && (
