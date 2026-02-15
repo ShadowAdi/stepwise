@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StepResponse, HotspotResponse } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface HotspotViewerProps {
   step: StepResponse;
@@ -70,6 +71,26 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
     if (clickedHotspot === hotspotId) return 0.9;
     if (hoveredHotspot === hotspotId) return 0.6;
     return 0.35;
+  };
+
+  // Determine tooltip position based on hotspot location
+  const getTooltipPosition = (hotspot: HotspotResponse) => {
+    const x = parseFloat(hotspot.x);
+    const width = parseFloat(hotspot.width);
+    const centerX = x + width / 2;
+
+    // Left third of screen - tooltip right-aligned
+    if (centerX < 33) {
+      return { align: 'left', classes: 'left-0' };
+    }
+    // Right third of screen - tooltip left-aligned
+    else if (centerX > 67) {
+      return { align: 'right', classes: 'right-0' };
+    }
+    // Center - tooltip centered
+    else {
+      return { align: 'center', classes: 'left-1/2 -translate-x-1/2' };
+    }
   };
 
   return (
@@ -188,22 +209,37 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
 
               {/* Tooltip */}
               <AnimatePresence>
-                {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (
-                  <motion.div
-                    className="absolute z-50 px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gray-800 rounded-lg shadow-xl whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-xs left-1/2 bottom-full mb-2"
-                    style={{ transform: 'translateX(-50%)' }}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 4 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    <span className="block truncate">{hotspot.tooltipText || 'Click to navigate'}</span>
-                    {/* Arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-                      <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-800" />
-                    </div>
-                  </motion.div>
-                )}
+                {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (() => {
+                  const position = getTooltipPosition(hotspot);
+                  return (
+                    <motion.div
+                      className={cn(
+                        "absolute z-50 px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gray-800 rounded-lg shadow-xl pointer-events-none bottom-full mb-2",
+                        "w-max max-w-[180px] sm:max-w-[240px]",
+                        position.classes
+                      )}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      <span className="block break-words leading-snug">
+                        {hotspot.tooltipText || 'Click to navigate'}
+                      </span>
+                      {/* Arrow */}
+                      <div 
+                        className={cn(
+                          "absolute top-full -mt-px",
+                          position.align === 'left' && "left-3",
+                          position.align === 'right' && "right-3",
+                          position.align === 'center' && "left-1/2 -translate-x-1/2"
+                        )}
+                      >
+                        <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-800" />
+                      </div>
+                    </motion.div>
+                  );
+                })()}
               </AnimatePresence>
 
               {/* Click Icon for navigable hotspots */}
