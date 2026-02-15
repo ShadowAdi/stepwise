@@ -190,12 +190,11 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
               <AnimatePresence>
                 {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (
                   <motion.div
-                    className="absolute z-30 px-2 py-1.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-none"
+                    className="fixed z-50 px-2 py-1.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-xl whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-xs"
                     style={{
-                      bottom: '110%',
                       left: '50%',
-                      transform: 'translateX(-50%)',
-                      marginBottom: '8px',
+                      top: '50%',
+                      transform: 'translate(-50%, -150%)',
                     }}
                     initial={{ opacity: 0, y: 10, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -288,6 +288,26 @@ const StepsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6 lg:p-8">
+      {/* Back Button */}
+      <div className="max-w-[1800px] mx-auto mb-4">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`/dashboard/${demoId}`)}
+            className="cursor-pointer flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Dashboard
+          </Button>
+        </motion.div>
+      </div>
       <div className="max-w-[1800px] mx-auto flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Steps List Panel */}
         <motion.section 
@@ -303,12 +323,14 @@ const StepsPage = () => {
               </svg>
               Steps ({steps.length})
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Drag to reorder steps</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium hidden lg:block">Drag to reorder steps</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium lg:hidden">Swipe to view all →</p>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
+          <div className="flex-1 overflow-x-auto lg:overflow-x-hidden overflow-y-hidden lg:overflow-y-auto p-3 sm:p-4 lg:p-6">
+            <div className="flex lg:flex-col gap-3 sm:gap-4 lg:space-y-0">
             {steps.length === 0 ? (
               <motion.div 
-                className="text-center py-16"
+                className="text-center py-16 min-w-[250px] lg:min-w-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
@@ -328,7 +350,7 @@ const StepsPage = () => {
                     onDragOver={handleDragOver as any}
                     onDrop={(e) => handleDrop(e as any, index)}
                     onClick={() => setSelectedStep(step)}
-                    className={`group cursor-grab active:cursor-grabbing hover:shadow-xl transition-all rounded-xl p-3 border-2 ${selectedStep?.id === step.id ? 'ring-3 ring-blue-500 bg-blue-50 border-blue-300 shadow-xl' : 'bg-white border-gray-200 hover:border-blue-300'}`}
+                    className={`group cursor-grab active:cursor-grabbing hover:shadow-xl transition-all rounded-xl p-3 border-2 flex-shrink-0 w-[250px] lg:w-auto ${selectedStep?.id === step.id ? 'ring-3 ring-blue-500 bg-blue-50 border-blue-300 shadow-xl' : 'bg-white border-gray-200 hover:border-blue-300'}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
@@ -397,6 +419,7 @@ const StepsPage = () => {
                 ))}
               </AnimatePresence>
             )}
+            </div>
           </div>
         </motion.section>
 
