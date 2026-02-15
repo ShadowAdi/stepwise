@@ -325,26 +325,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
         )}
       </AnimatePresence>
 
-      {/* Instructions Overlay */}
-      <AnimatePresence>
-        {hotspots.length > 0 && !hoveredHotspot && !isLoading && (
-          <motion.div 
-            className="hidden sm:block absolute top-4 right-4 lg:top-6 lg:right-6 bg-blue-600 rounded-lg shadow-sm px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-white cursor-default max-w-[200px] lg:max-w-none"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ delay: 0.5 }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="break-words"
-            >
-              ✨ Hover over highlighted areas to interact
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
     </motion.div>
   );
 };

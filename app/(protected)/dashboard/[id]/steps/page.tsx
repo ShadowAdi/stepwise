@@ -470,7 +470,9 @@ const StepsPage = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div>
-                    <Label className="mb-3 block text-sm font-bold text-gray-700">Step Image</Label>
+                    <Label className="mb-2 sm:mb-3 block text-xs sm:text-sm font-bold text-gray-700">
+                      {isEditMode ? 'Update Image' : 'Upload Image'} *
+                    </Label>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -481,38 +483,36 @@ const StepsPage = () => {
                     />
                     <motion.label
                       htmlFor="image-upload"
-                      className="block w-full h-48 sm:h-60 lg:h-72 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      className="block w-full h-40 sm:h-48 lg:h-56 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all overflow-hidden"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       {uploadedImage ? (
-                        <div className="relative w-full h-full">
+                        <div className="relative w-full h-full group">
                           <Image
                             src={uploadedImage}
                             alt="Uploaded"
                             fill
                             className="object-cover"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-6">
-                            <span className="text-white font-semibold bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm">
-                              Click to change image
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-white font-semibold bg-black/50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg backdrop-blur-sm text-xs sm:text-sm">
+                              Click to change
                             </span>
                           </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full px-4">
-                          <motion.svg 
-                            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-blue-400 mb-3 sm:mb-4" 
+                          <svg 
+                            className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mb-2 sm:mb-3" 
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
-                            animate={{ y: [0, -10, 0] }}
-                            transition={{ duration: 2, repeat: Infinity }}
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                          </motion.svg>
-                          <p className="text-gray-700 font-bold text-sm sm:text-base lg:text-lg text-center">Click to upload an image</p>
-                          <p className="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-2 text-center">PNG, JPG, GIF up to 10MB</p>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-gray-700 font-semibold text-xs sm:text-sm text-center">Choose an image</p>
+                          <p className="text-gray-500 text-[10px] sm:text-xs mt-1 text-center">PNG, JPG or GIF (max 10MB)</p>
                         </div>
                       )}
                     </motion.label>
@@ -521,22 +521,21 @@ const StepsPage = () => {
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
                       >
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             setUploadedImage(null);
                             if (fileInputRef.current) {
                               fileInputRef.current.value = '';
                             }
                           }}
-                          className="w-full mt-3 cursor-pointer"
+                          className="w-full mt-2 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                           Remove Image
                         </Button>
@@ -544,100 +543,93 @@ const StepsPage = () => {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="title" className="text-sm font-bold text-gray-700">Title</Label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="title" className="text-xs sm:text-sm font-bold text-gray-700">Step Title *</Label>
                     <Input
                       id="title"
-                      placeholder="Enter step title"
+                      placeholder="e.g., Create your first project"
                       {...register('title')}
-                      className={`border-2 ${errors.title ? 'border-red-400' : 'border-gray-300'} focus:border-blue-500`}
+                      className={`border ${errors.title ? 'border-red-400 focus:ring-red-200' : 'border-gray-300'} focus:border-blue-500 text-sm`}
                     />
                     {errors.title && (
                       <motion.p 
-                        className="text-xs text-red-600 font-semibold"
+                        className="text-xs text-red-600 flex items-center gap-1"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                       >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
                         {errors.title.message}
                       </motion.p>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-sm font-bold text-gray-700">Description</Label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="description" className="text-xs sm:text-sm font-bold text-gray-700">Description *</Label>
                     <Textarea
                       id="description"
-                      placeholder="Enter step description"
-                      rows={6}
+                      placeholder="Explain what users should do in this step..."
+                      rows={4}
                       {...register('description')}
-                      className={`border-2 ${errors.description ? 'border-red-400' : 'border-gray-300'} focus:border-blue-500 text-sm`}
+                      className={`border ${errors.description ? 'border-red-400 focus:ring-red-200' : 'border-gray-300'} focus:border-blue-500 text-xs sm:text-sm resize-none`}
                     />
                     {errors.description && (
                       <motion.p 
-                        className="text-xs text-red-600 font-semibold"
+                        className="text-xs text-red-600 flex items-center gap-1"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                       >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
                         {errors.description.message}
                       </motion.p>
                     )}
                   </div>
 
-                  <div className="flex gap-3 pt-4">
-                    <motion.div
-                      className="flex-1"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                  <div className="flex gap-2 sm:gap-3 pt-2 sm:pt-4 border-t border-gray-200">
+                    <Button 
+                      type="submit" 
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 cursor-pointer text-sm sm:text-base" 
+                      disabled={isSubmitting}
                     >
-                      <Button 
-                        type="submit" 
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 cursor-pointer" 
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <motion.svg 
-                              className="w-5 h-5 mr-2" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              viewBox="0 0 24 24"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </motion.svg>
-                            {isEditMode ? 'Updating...' : 'Creating...'}
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            {isEditMode ? 'Update Step' : 'Create Step'}
-                          </>
-                        )}
-                      </Button>
-                    </motion.div>
-                    {isEditMode && (
-                      <motion.div
-                        className="flex-1"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={cancelEdit}
-                          className="w-full py-6 font-bold cursor-pointer"
-                        >
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      {isSubmitting ? (
+                        <>
+                          <motion.svg 
+                            className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </motion.svg>
+                          <span className="hidden sm:inline">{isEditMode ? 'Updating...' : 'Creating...'}</span>
+                          <span className="sm:hidden">...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
-                          Cancel
-                        </Button>
-                      </motion.div>
+                          {isEditMode ? 'Update Step' : 'Create Step'}
+                        </>
+                      )}
+                    </Button>
+                    {isEditMode && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={cancelEdit}
+                        className="flex-1 py-2.5 sm:py-3 font-semibold cursor-pointer text-sm sm:text-base"
+                      >
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Cancel
+                      </Button>
                     )}
                   </div>
                 </motion.form>

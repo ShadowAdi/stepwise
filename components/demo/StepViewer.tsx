@@ -133,23 +133,22 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
             allSteps={steps}
           />
           
-          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 lg:p-4 max-w-[calc(100%-1rem)] sm:max-w-md">
-            <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-              <span className="text-xs sm:text-sm font-semibold text-blue-600 bg-blue-50 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 max-w-[calc(100%-1rem)] sm:max-w-md">
+            <div className="flex items-center gap-1 sm:gap-2 mb-1">
+              <span className="text-xs sm:text-sm font-semibold text-blue-600 bg-blue-50 px-2 sm:px-3 py-1 rounded">
                 Step {currentStep.position}
               </span>
               {isPlaying && (
-                <span className="flex items-center text-xs text-green-600 bg-green-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
-                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-600 rounded-full animate-pulse mr-0.5 sm:mr-1"></span>
-                  <span className="hidden sm:inline">Auto-playing</span>
-                  <span className="sm:hidden">Playing</span>
+                <span className="hidden sm:flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                  <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse mr-1"></span>
+                  Auto-playing
                 </span>
               )}
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1 line-clamp-2 break-words">
+            <h3 className="text-sm sm:text-lg font-bold text-gray-900 line-clamp-2 break-words">
               {currentStep.title}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 sm:line-clamp-3 break-words">
+            <p className="hidden sm:block text-xs sm:text-sm text-gray-600 line-clamp-2 break-words mt-1">
               {currentStep.description}
             </p>
           </div>
@@ -223,81 +222,41 @@ export const StepViewer = ({ steps, autoPlay = false }: StepViewerProps) => {
         <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
           {currentStep.description}
         </p>
-        
-        {hotspots.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h5 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-              <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-              </svg>
-              Interactive Hotspots ({hotspots.length})
-            </h5>
-            <p className="text-sm text-gray-600 mb-3">
-              Click on the highlighted areas in the image to explore different parts or navigate to related steps.
-            </p>
-            
-            {/* <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
-              <p className="text-xs font-semibold text-gray-700">Hotspot Details (Debug):</p>
-              {hotspots.map((hotspot, idx) => {
-                const targetStep = hotspot.targetStepId 
-                  ? steps.find(s => s.id === hotspot.targetStepId)
-                  : null;
-                return (
-                  <div key={hotspot.id} className="text-xs text-gray-600 bg-white p-2 rounded border">
-                    <div><strong>Hotspot {idx + 1}:</strong></div>
-                    <div>• Tooltip: {hotspot.tooltipText || 'None'}</div>
-                    <div>• Target Step ID: {hotspot.targetStepId || 'None'}</div>
-                    {hotspot.targetStepId && (
-                      <div>• Target: {targetStep ? `Step ${targetStep.position}: ${targetStep.title}` : '⚠️ Step not found!'}</div>
-                    )}
-                    <div>• Color: <span style={{ backgroundColor: hotspot.color, padding: '2px 8px', borderRadius: '3px' }}>{hotspot.color}</span></div>
-                  </div>
-                );
-              })}
-            </div> */}
-          </div>
-        )}
-        
-        {hotspots.length === 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-            No hotspots on this step
-          </div>
-        )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-        <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-3 sm:mb-4">All Steps</h4>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
-          {steps.map((step, index) => (
-            <button
-              key={step.id}
-              onClick={() => handleStepClick(index)}
-              className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
-                currentStepIndex === index
-                  ? 'border-blue-500 ring-2 ring-blue-200 shadow-md'
-                  : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
-              }`}
-            >
-              <Image
-                src={step.imageUrl}
-                alt={step.title || `Step ${step.position}`}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform"
-              />
-              <div className={`absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex items-end p-1 sm:p-2 ${
-                currentStepIndex === index ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              } transition-opacity`}>
-                <span className="text-white text-[10px] sm:text-xs font-medium line-clamp-1 break-words">
-                  {step.position}. {step.title}
-                </span>
-              </div>
-              {currentStepIndex === index && (
-                <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              )}
-            </button>
-          ))}
+      {steps.length > 1 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+          <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-3 sm:mb-4">All Steps</h4>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">
+            {steps.map((step, index) => (
+              <button
+                key={step.id}
+                onClick={() => handleStepClick(index)}
+                className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                  currentStepIndex === index
+                    ? 'border-blue-500 ring-2 ring-blue-200 shadow-md'
+                    : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                }`}
+              >
+                <Image
+                  src={step.imageUrl}
+                  alt={step.title || `Step ${step.position}`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center p-1">
+                  <span className="text-white text-xs sm:text-sm font-bold">
+                    {step.position}
+                  </span>
+                </div>
+                {currentStepIndex === index && (
+                  <div className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-lg"></div>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
