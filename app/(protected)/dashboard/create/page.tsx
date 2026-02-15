@@ -106,7 +106,7 @@ export default function CreateDemoPage() {
                 <Textarea
                   id="description"
                   placeholder="What is this demo about?"
-                  rows={3}
+                  rows={5}
                   className="resize-none"
                   {...register("description")}
                   aria-invalid={!!errors.description}

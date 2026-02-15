@@ -6,14 +6,6 @@ import { useEffect, useState } from "react";
 import { getUserDemos } from "@/actions/demos/demos.action";
 import { DemoResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,9 +29,9 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { toast } from "sonner";
 import { deleteDemo, duplicateDemo, toggleDemoVisibility } from "@/actions/demos/demos.action";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { DemoSearchBar } from "@/components/dashboard/DemoSearchBar";
 import {
   Plus,
-  Search,
   MoreHorizontal,
   Eye,
   Pencil,
@@ -162,51 +154,18 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Filters bar */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-tertiary pointer-events-none" />
-            <Input
-              type="search"
-              placeholder="Search demos…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Select value={filterPublic} onValueChange={(v: any) => setFilterPublic(v)}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Visibility" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="createdAt">Created</SelectItem>
-                <SelectItem value="updatedAt">Updated</SelectItem>
-                <SelectItem value="title">Title</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={sortOrder} onValueChange={(v: any) => setSortOrder(v)}>
-              <SelectTrigger className="w-[110px]">
-                <SelectValue placeholder="Order" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Newest</SelectItem>
-                <SelectItem value="asc">Oldest</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Search bar */}
+        <div className="mb-6">
+          <DemoSearchBar
+            search={search}
+            onSearchChange={setSearch}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+            filterPublic={filterPublic}
+            onFilterPublicChange={setFilterPublic}
+          />
         </div>
 
         {/* Content */}

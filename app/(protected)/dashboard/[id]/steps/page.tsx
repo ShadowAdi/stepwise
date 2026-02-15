@@ -376,7 +376,7 @@ const StepsPage = () => {
                     <Textarea
                       id="description"
                       placeholder="Explain what users should do…"
-                      rows={3}
+                      rows={5}
                       className="resize-none"
                       {...register("description")}
                       aria-invalid={!!errors.description}
