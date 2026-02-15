@@ -258,7 +258,11 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {demos.map((demo) => (
-              <Card key={demo.id} className="rounded-sm hover:shadow-lg transition-shadow">
+              <Card 
+                key={demo.id} 
+                className="rounded-sm hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => router.push(`/dashboard/${demo.id}`)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -274,31 +278,51 @@ export default function DashboardPage() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0 rounded-sm">
+                        <Button 
+                          variant="ghost" 
+                          className="h-8 w-8 p-0 rounded-sm"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                           </svg>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}`)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/dashboard/${demo.id}`);
+                        }}>
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/edit`)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/dashboard/${demo.id}/edit`);
+                        }}>
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => router.push(`/demo/${demo.slug}`)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/demo/${demo.slug}`);
+                        }}>
                           Preview
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleToggleVisibility(demo.id)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleVisibility(demo.id);
+                        }}>
                           Make {demo.isPublic ? 'Private' : 'Public'}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDuplicate(demo.id)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleDuplicate(demo.id);
+                        }}>
                           Duplicate
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setDemoToDelete(demo.id);
                             setDeleteDialogOpen(true);
                           }}

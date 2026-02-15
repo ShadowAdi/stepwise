@@ -296,10 +296,10 @@ const StepsPage = () => {
           transition={{ duration: 0.3 }}
         >
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => router.push(`/dashboard/${demoId}`)}
-            className="cursor-pointer flex items-center gap-2"
+            className="cursor-pointer flex items-center gap-2 hover:bg-gray-100"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

@@ -324,11 +324,11 @@ export default function ViewDemoPage() {
             },
             { 
               title: "Demo Link", 
-              value: `/${demo.slug}`, 
+              value: demo.slug, 
               description: "Share this link",
               icon: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
               color: "purple",
-              isMono: true
+              isMono: false
             },
             { 
               title: "Status", 
@@ -369,25 +369,34 @@ export default function ViewDemoPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-xs text-gray-600 font-medium break-words">
-                    {stat.description}
-                  </p>
-                  {stat.title === "Demo Link" && (
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button 
-                        size="sm" 
-                        onClick={() => setShareDialogOpen(true)}
-                        className="h-8 text-xs rounded-lg mt-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  {stat.title === "Demo Link" ? (
+                    <>
+                      <div className="flex items-center gap-2 text-xs text-gray-600 font-medium mb-3">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                         </svg>
-                        Share & Embed
-                      </Button>
-                    </motion.div>
+                        <span className="truncate">{stat.description}</span>
+                      </div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button 
+                          size="sm" 
+                          onClick={() => setShareDialogOpen(true)}
+                          className="h-8 text-xs rounded-lg w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                          Share & Embed
+                        </Button>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <p className="text-xs text-gray-600 font-medium break-words">
+                      {stat.description}
+                    </p>
                   )}
                 </CardContent>
               </Card>
