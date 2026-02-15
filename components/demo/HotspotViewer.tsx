@@ -190,28 +190,18 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
               <AnimatePresence>
                 {(hotspot.tooltipText || hotspot.targetStepId) && hoveredHotspot === hotspot.id && (
                   <motion.div
-                    className="fixed z-50 px-2 py-1.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-white bg-gray-900 rounded-lg shadow-xl whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-xs"
-                    style={{
-                      left: '50%',
-                      top: '50%',
-                      transform: 'translate(-50%, -150%)',
-                    }}
-                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
+                    className="absolute z-50 px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gray-800 rounded-lg shadow-xl whitespace-nowrap pointer-events-none max-w-[200px] sm:max-w-xs left-1/2 bottom-full mb-2"
+                    style={{ transform: 'translateX(-50%)' }}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
                   >
                     <span className="block truncate">{hotspot.tooltipText || 'Click to navigate'}</span>
-                    
                     {/* Arrow */}
-                    <div
-                      className="absolute w-2 h-2 sm:w-3 sm:h-3 bg-gray-900 transform rotate-45"
-                      style={{
-                        bottom: '-4px',
-                        left: '50%',
-                        marginLeft: '-4px',
-                      }}
-                    />
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                      <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-800" />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

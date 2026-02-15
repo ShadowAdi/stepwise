@@ -59,8 +59,8 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-[360px]">
           <Link href="/" className="inline-flex items-center gap-2 mb-10">
-            <div className="size-8 rounded-lg bg-text-primary flex items-center justify-center">
-              <Zap className="size-4 text-text-inverted" />
+            <div className="size-8 rounded-lg bg-brand flex items-center justify-center">
+              <Zap className="size-4 text-brand-foreground" />
             </div>
             <span className="text-base font-semibold tracking-tight">Stepwise</span>
           </Link>
@@ -123,12 +123,12 @@ export default function LoginPage() {
       </div>
 
       {/* Right — Brand panel */}
-      <div className="hidden lg:flex flex-1 bg-text-primary items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-brand items-center justify-center p-12">
         <div className="max-w-md">
           <h2 className="text-3xl font-semibold text-white tracking-tight mb-4">
             Build interactive demos in minutes
           </h2>
-          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
+          <p className="text-indigo-200 text-[15px] leading-relaxed mb-8">
             Transform static screenshots into engaging, clickable product
             walkthroughs — no video recording needed.
           </p>
@@ -139,12 +139,12 @@ export default function LoginPage() {
               "Share with your team or make public",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
-                <div className="size-5 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <svg className="size-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-neutral-300 text-sm">{item}</span>
+                <div className="size-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                   <svg className="size-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                   </svg>
+                 </div>
+                <span className="text-indigo-100 text-sm">{item}</span>
               </div>
             ))}
           </div>

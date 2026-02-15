@@ -24,8 +24,8 @@ const DashboardHeader = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="size-7 rounded-md bg-text-primary flex items-center justify-center">
-              <Zap className="size-3.5 text-text-inverted" />
+            <div className="size-7 rounded-md bg-brand flex items-center justify-center">
+              <Zap className="size-3.5 text-brand-foreground" />
             </div>
             <span className="text-sm font-semibold tracking-tight">Stepwise</span>
           </Link>

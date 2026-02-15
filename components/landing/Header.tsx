@@ -7,8 +7,8 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2">
-            <div className="size-7 rounded-md bg-text-primary flex items-center justify-center">
-              <Zap className="size-3.5 text-text-inverted" />
+            <div className="size-7 rounded-md bg-brand flex items-center justify-center">
+              <Zap className="size-3.5 text-brand-foreground" />
             </div>
             <span className="text-sm font-semibold tracking-tight">Stepwise</span>
           </Link>
@@ -34,7 +34,7 @@ const Header = () => {
             </Link>
             <Link
               href="/register"
-              className="px-3.5 py-1.5 text-sm font-medium text-text-inverted bg-text-primary hover:bg-text-primary/90 rounded-md transition-colors"
+              className="px-3.5 py-1.5 text-sm font-medium text-brand-foreground bg-brand hover:bg-accent-blue-hover rounded-md transition-colors"
             >
               Sign up
             </Link>
