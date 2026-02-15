@@ -69,6 +69,7 @@ export const createHotspot = async (
             width: payload.width,
             height: payload.height,
             color: payload.color,
+            borderRadius: payload.borderRadius || "0",
             tooltipText: payload.tooltipText || null,
             tooltipPlacement: payload.tooltipPlacement || null,
             targetStepId: payload.targetStepId || null,
@@ -247,6 +248,7 @@ export const updateHotspot = async (
         if (payload.width !== undefined) updateData.width = payload.width;
         if (payload.height !== undefined) updateData.height = payload.height;
         if (payload.color !== undefined) updateData.color = payload.color;
+        if (payload.borderRadius !== undefined) updateData.borderRadius = payload.borderRadius;
         if (payload.tooltipText !== undefined) updateData.tooltipText = payload.tooltipText;
         if (payload.tooltipPlacement !== undefined) updateData.tooltipPlacement = payload.tooltipPlacement;
         if (payload.targetStepId !== undefined) updateData.targetStepId = payload.targetStepId;

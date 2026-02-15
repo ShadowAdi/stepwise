@@ -1,0 +1,1 @@
+ALTER TABLE "hotspots" ADD COLUMN "border_radius" text DEFAULT '0';

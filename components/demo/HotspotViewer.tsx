@@ -126,7 +126,7 @@ export const HotspotViewer = ({ step, hotspots, onHotspotClick, isLoading, allSt
                 opacity: getOpacity(hotspot.id),
                 backgroundColor: hotspot.color,
                 border: `3px solid ${hotspot.color}`,
-                borderRadius: '12px',
+                borderRadius: `${hotspot.borderRadius || 8}px`,
                 boxShadow: hoveredHotspot === hotspot.id 
                   ? `0 0 30px ${hotspot.color}80, 0 8px 20px rgba(0,0,0,0.15)` 
                   : '0 2px 8px rgba(0,0,0,0.1)',

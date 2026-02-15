@@ -46,6 +46,7 @@ export const hotspots = pgTable("hotspots", {
     width: text("width").notNull(),
     height: text("height").notNull(),
     color: text("color").notNull(),
+    borderRadius: text("border_radius").default("0"),
     tooltipText: text("tooltip_text"),
     tooltipPlacement: text("tooltip_placement"),
     targetStepId: uuid("target_step_id"),

@@ -12,6 +12,7 @@ export interface CreateHotspotDTO {
   width: string;
   height: string;
   color: string;
+  borderRadius?: string;
   tooltipText?: string;
   tooltipPlacement?: string;
   targetStepId?: string;
@@ -23,6 +24,7 @@ export interface UpdateHotspotDTO {
   width?: string;
   height?: string;
   color?: string;
+  borderRadius?: string;
   tooltipText?: string;
   tooltipPlacement?: string;
   targetStepId?: string;
@@ -37,6 +39,7 @@ export interface HotspotResponse {
   width: string;
   height: string;
   color: string;
+  borderRadius: string | null;
   tooltipText: string | null;
   tooltipPlacement: string | null;
   targetStepId: string | null;
