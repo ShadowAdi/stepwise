@@ -11,6 +11,7 @@ import { createUser } from "@/actions/user/user.action"
 import { useAuth } from "@/context/AuthContext"
 import { redirect } from "next/navigation"
 import { toast } from "sonner"
+import { Zap, ArrowRight, Loader2 } from "lucide-react"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -39,126 +40,127 @@ export default function RegisterPage() {
       const response = await createUser(createUserData)
       if (response.success && response.data) {
         registerAuth(response.data.token, response.data.user)
-        toast.success(`User registered successfully`)
+        toast.success("Account created successfully")
       } else {
-        toast.error(!response.success ? response.error : `Failed to register user`)
-        console.error(!response.success ? response.error : `Failed to register user`)
+        toast.error(!response.success ? response.error : "Failed to create account")
       }
     } catch (error) {
-      console.error('Registration error:', error)
       toast.error(
         error instanceof Error
           ? error.message
-          : 'An unexpected error occurred during registration. Please try again.'
+          : "An unexpected error occurred. Please try again."
       )
     }
   }
 
   return (
     <>
-      <div className="flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Create account</h1>
-            <p className="text-gray-600">Get started with StepWise today</p>
-          </div>
+      {/* Left — Form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-[360px]">
+          <Link href="/" className="inline-flex items-center gap-2 mb-10">
+            <div className="size-8 rounded-lg bg-text-primary flex items-center justify-center">
+              <Zap className="size-4 text-text-inverted" />
+            </div>
+            <span className="text-base font-semibold tracking-tight">Stepwise</span>
+          </Link>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+          <h1 className="text-2xl font-semibold tracking-tight mb-1">Create your account</h1>
+          <p className="text-sm text-text-secondary mb-8">Get started with Stepwise — it&apos;s free</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-sm font-medium">Name</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
-                className="rounded-sm"
+                placeholder="Your name"
                 {...register("name")}
                 aria-invalid={!!errors.name}
               />
               {errors.name && (
-                <p className="text-sm text-red-600">{errors.name.message}</p>
+                <p className="text-xs text-error">{errors.name.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
-                className="rounded-sm"
+                placeholder="you@company.com"
                 {...register("email")}
                 aria-invalid={!!errors.email}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-xs text-error">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
-                className="rounded-sm"
+                placeholder="Min. 8 characters"
                 {...register("password")}
                 aria-invalid={!!errors.password}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">{errors.password.message}</p>
+                <p className="text-xs text-error">{errors.password.message}</p>
               )}
             </div>
 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-sm"
+              className="w-full"
             >
-              {isSubmitting ? "Creating account..." : "Create account"}
+              {isSubmitting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  Create account
+                  <ArrowRight className="size-4 ml-1" />
+                </>
+              )}
             </Button>
           </form>
 
-          <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+          <p className="text-center text-sm text-text-secondary mt-6">
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-text-primary hover:underline underline-offset-4">
               Sign in
             </Link>
-          </div>
+          </p>
         </div>
       </div>
 
-      <div className="hidden lg:flex items-center justify-center p-8 bg-linear-to-br from-blue-600 to-indigo-700">
-        <div className="max-w-md space-y-6 text-white">
-          <h2 className="text-4xl font-bold">Join StepWise</h2>
-          <p className="text-lg text-purple-100">
-            Start building beautiful, interactive step-by-step demos that help your
-            users understand your product better.
+      {/* Right — Brand panel */}
+      <div className="hidden lg:flex flex-1 bg-text-primary items-center justify-center p-12">
+        <div className="max-w-md">
+          <h2 className="text-3xl font-semibold text-white tracking-tight mb-4">
+            Join thousands of teams
+          </h2>
+          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
+            Start building beautiful, interactive step-by-step demos that help
+            your users understand your product better.
           </p>
-          <div className="space-y-4 pt-4">
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+          <div className="space-y-4">
+            {[
+              "Free to start, upgrade anytime",
+              "No credit card required",
+              "Cancel anytime",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <div className="size-5 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <svg className="size-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-neutral-300 text-sm">{item}</span>
               </div>
-              <p className="text-white">Free to start, upgrade anytime</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-white">No credit card required</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-white">Cancel anytime</p>
-            </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,11 +1,11 @@
 export default function AuthLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <div className="min-h-screen grid lg:grid-cols-2">
-            {children}
-        </div>
-    );
+  return (
+    <div className="min-h-screen flex">
+      {children}
+    </div>
+  );
 }

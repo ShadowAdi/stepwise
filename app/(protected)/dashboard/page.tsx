@@ -7,7 +7,6 @@ import { getUserDemos } from "@/actions/demos/demos.action";
 import { DemoResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -32,11 +31,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
 import { deleteDemo, duplicateDemo, toggleDemoVisibility } from "@/actions/demos/demos.action";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Eye,
+  Pencil,
+  Copy,
+  Trash2,
+  Globe,
+  Lock,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
 
 export default function DashboardPage() {
   const { token } = useAuth();
@@ -99,7 +112,7 @@ export default function DashboardPage() {
 
     const result = await deleteDemo(demoToDelete, token);
     if (result.success) {
-      toast.success("Demo deleted successfully");
+      toast.success("Demo deleted");
       fetchDemos();
     } else {
       toast.error(result.error);
@@ -110,10 +123,9 @@ export default function DashboardPage() {
 
   const handleDuplicate = async (demoId: string) => {
     if (!token) return;
-
     const result = await duplicateDemo(demoId, token);
     if (result.success) {
-      toast.success("Demo duplicated successfully");
+      toast.success("Demo duplicated");
       fetchDemos();
     } else {
       toast.error(result.error);
@@ -122,7 +134,6 @@ export default function DashboardPage() {
 
   const handleToggleVisibility = async (demoId: string) => {
     if (!token) return;
-
     const result = await toggleDemoVisibility(demoId, token);
     if (result.success) {
       toast.success(`Demo is now ${result.data.isPublic ? "public" : "private"}`);
@@ -131,230 +142,182 @@ export default function DashboardPage() {
       toast.error(result.error);
     }
   };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-page">
       <DashboardHeader />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900">My Demos</h2>
-              <p className="text-gray-600 mt-1">Create and manage your interactive demos</p>
-            </div>
-            <Button
-              onClick={() => router.push("/dashboard/create")}
-              className="rounded-sm"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Create Demo
-            </Button>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Page header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight">Demos</h1>
+            <p className="text-sm text-text-secondary mt-0.5">
+              {total} demo{total !== 1 ? "s" : ""} total
+            </p>
           </div>
+          <Button onClick={() => router.push("/dashboard/create")} size="sm">
+            <Plus className="size-4" />
+            New demo
+          </Button>
+        </div>
 
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                type="search"
-                placeholder="Search demos..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="rounded-sm"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Select value={filterPublic} onValueChange={(value: any) => setFilterPublic(value)}>
-                <SelectTrigger className="w-full sm:w-[140px] rounded-sm">
-                  <SelectValue placeholder="Filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Demos</SelectItem>
-                  <SelectItem value="public">Public</SelectItem>
-                  <SelectItem value="private">Private</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* Filters bar */}
+        <div className="flex flex-col md:flex-row gap-3 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-tertiary pointer-events-none" />
+            <Input
+              type="search"
+              placeholder="Search demos…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Select value={filterPublic} onValueChange={(v: any) => setFilterPublic(v)}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="Visibility" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="public">Public</SelectItem>
+                <SelectItem value="private">Private</SelectItem>
+              </SelectContent>
+            </Select>
 
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger className="w-full sm:w-[140px] rounded-sm">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="createdAt">Created</SelectItem>
-                  <SelectItem value="updatedAt">Updated</SelectItem>
-                  <SelectItem value="title">Title</SelectItem>
-                </SelectContent>
-              </Select>
+            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="updatedAt">Updated</SelectItem>
+                <SelectItem value="title">Title</SelectItem>
+              </SelectContent>
+            </Select>
 
-              <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
-                <SelectTrigger className="w-full sm:w-[120px] rounded-sm">
-                  <SelectValue placeholder="Order" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="desc">Newest</SelectItem>
-                  <SelectItem value="asc">Oldest</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={sortOrder} onValueChange={(v: any) => setSortOrder(v)}>
+              <SelectTrigger className="w-[110px]">
+                <SelectValue placeholder="Order" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Newest</SelectItem>
+                <SelectItem value="asc">Oldest</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Card className="rounded-sm">
-            <CardHeader className="pb-2">
-              <CardDescription>Total Demos</CardDescription>
-              <CardTitle className="text-3xl">{total}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="rounded-sm">
-            <CardHeader className="pb-2">
-              <CardDescription>Public Demos</CardDescription>
-              <CardTitle className="text-3xl">
-                {demos.filter(d => d.isPublic).length}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="rounded-sm">
-            <CardHeader className="pb-2">
-              <CardDescription>Private Demos</CardDescription>
-              <CardTitle className="text-3xl">
-                {demos.filter(d => !d.isPublic).length}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
-
+        {/* Content */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <Card key={i} className="rounded-sm animate-pulse">
-                <CardHeader>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mt-2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                </CardContent>
-              </Card>
+              <div key={i} className="border border-edge rounded-lg p-4 bg-surface">
+                <Skeleton className="h-5 w-3/4 mb-3" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="h-4 w-full" />
+              </div>
             ))}
           </div>
         ) : demos.length === 0 ? (
-          <Card className="rounded-sm">
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No demos found</h3>
-              <p className="text-gray-500 text-center mb-6">
-                {search ? "Try adjusting your search or filters" : "Get started by creating your first demo"}
-              </p>
-              {!search && (
-                <Button onClick={() => router.push("/dashboard/create")} className="rounded-sm">
-                  Create Your First Demo
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="border border-edge rounded-lg bg-surface flex flex-col items-center justify-center py-20">
+            <div className="size-12 rounded-lg bg-surface-secondary flex items-center justify-center mb-4">
+              <FileText className="size-6 text-text-tertiary" />
+            </div>
+            <h3 className="text-sm font-semibold mb-1">No demos found</h3>
+            <p className="text-sm text-text-secondary mb-6">
+              {search ? "Try adjusting your search or filters" : "Create your first demo to get started"}
+            </p>
+            {!search && (
+              <Button onClick={() => router.push("/dashboard/create")} size="sm">
+                <Plus className="size-4" />
+                Create demo
+              </Button>
+            )}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {demos.map((demo) => (
-              <Card 
-                key={demo.id} 
-                className="rounded-sm hover:shadow-lg transition-shadow cursor-pointer"
+              <div
+                key={demo.id}
+                className="group border border-edge rounded-lg bg-surface p-4 hover:border-edge-strong transition-colors cursor-pointer"
                 onClick={() => router.push(`/dashboard/${demo.id}`)}
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg truncate">{demo.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${demo.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {demo.isPublic ? 'Public' : 'Private'}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {new Date(demo.createdAt).toLocaleDateString()}
-                        </span>
-                      </CardDescription>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0 pr-2">
+                    <h3 className="text-sm font-medium truncate">{demo.title}</h3>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <Badge variant={demo.isPublic ? "default" : "secondary"} className="text-[11px] h-5 font-normal">
+                        {demo.isPublic ? (
+                          <><Globe className="size-3 mr-1" />Public</>
+                        ) : (
+                          <><Lock className="size-3 mr-1" />Private</>
+                        )}
+                      </Badge>
+                      <span className="text-xs text-text-tertiary">
+                        {new Date(demo.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </span>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          className="h-8 w-8 p-0 rounded-sm"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                          </svg>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/dashboard/${demo.id}`);
-                        }}>
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/dashboard/${demo.id}/edit`);
-                        }}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/demo/${demo.slug}`);
-                        }}>
-                          Preview
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleVisibility(demo.id);
-                        }}>
-                          Make {demo.isPublic ? 'Private' : 'Public'}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicate(demo.id);
-                        }}>
-                          Duplicate
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDemoToDelete(demo.id);
-                            setDeleteDialogOpen(true);
-                          }}
-                          className="text-red-600"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {demo.description || "No description provided"}
-                  </p>
-                </CardContent>
-                <CardFooter className="text-xs text-gray-500">
-                  <span>/{demo.slug}</span>
-                </CardFooter>
-              </Card>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/${demo.id}`); }}>
+                        <Eye className="size-4 mr-2 text-text-tertiary" />View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/${demo.id}/edit`); }}>
+                        <Pencil className="size-4 mr-2 text-text-tertiary" />Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/demo/${demo.slug}`); }}>
+                        <ExternalLink className="size-4 mr-2 text-text-tertiary" />Preview
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleToggleVisibility(demo.id); }}>
+                        {demo.isPublic ? <Lock className="size-4 mr-2 text-text-tertiary" /> : <Globe className="size-4 mr-2 text-text-tertiary" />}
+                        Make {demo.isPublic ? "private" : "public"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDuplicate(demo.id); }}>
+                        <Copy className="size-4 mr-2 text-text-tertiary" />Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => { e.stopPropagation(); setDemoToDelete(demo.id); setDeleteDialogOpen(true); }}
+                        className="text-error"
+                      >
+                        <Trash2 className="size-4 mr-2" />Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <p className="text-sm text-text-secondary line-clamp-2">
+                  {demo.description || "No description"}
+                </p>
+                <div className="mt-3 pt-3 border-t border-edge">
+                  <span className="text-xs text-text-tertiary font-mono">/{demo.slug}</span>
+                </div>
+              </div>
             ))}
           </div>
         )}
 
+        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 flex justify-center">
+          <div className="mt-6 flex justify-center">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => setPage(p => Math.max(1, p - 1))}
-                    className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />
                 </PaginationItem>
                 {[...Array(totalPages)].map((_, i) => (
@@ -371,7 +334,7 @@ export default function DashboardPage() {
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -380,21 +343,18 @@ export default function DashboardPage() {
         )}
       </main>
 
+      {/* Delete dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-sm">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Delete demo</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your demo
-              and all associated steps and hotspots.
+              This will permanently delete this demo and all its steps and hotspots. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-sm">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 rounded-sm"
-            >
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-error hover:bg-error/90 text-white">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

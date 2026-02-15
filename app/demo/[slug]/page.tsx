@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { getDemoWithSteps, deleteDemo, toggleDemoVisibility, duplicateDemo } from "@/actions/demos/demos.action";
 import { DemoResponse, StepResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,26 +28,21 @@ import {
 import { toast } from "sonner";
 import { StepViewer } from "@/components/demo/StepViewer";
 import { ShareEmbedDialog } from "@/components/demo/ShareEmbedDialog";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 100, damping: 15 }
-  }
-};
+import {
+  ArrowLeft,
+  MoreHorizontal,
+  Pencil,
+  Layers,
+  Globe,
+  Lock,
+  Copy,
+  Link2,
+  Trash2,
+  Share2,
+  Clock,
+  Loader2,
+  Zap,
+} from "lucide-react";
 
 export default function ViewDemoPage() {
   const { token, user } = useAuth();
@@ -64,31 +59,26 @@ export default function ViewDemoPage() {
   const fetchDemo = async () => {
     setIsLoading(true);
     const result = await getDemoWithSteps(slug, token || undefined);
-
     if (result.success && result.data) {
       const { steps: demoSteps, ...demoData } = result.data;
       setDemo(demoData);
       setSteps(demoSteps || []);
     } else {
-      toast.error(!result.success ? result.error : 'Failed to load demo');
+      toast.error(!result.success ? result.error : "Failed to load demo");
       router.push("/");
     }
-
     setIsLoading(false);
   };
 
   useEffect(() => {
-    if (slug) {
-      fetchDemo();
-    }
+    if (slug) fetchDemo();
   }, [slug, token]);
 
   const handleDelete = async () => {
     if (!demo || !token) return;
-
     const result = await deleteDemo(demo.id, token);
     if (result.success) {
-      toast.success("Demo deleted successfully");
+      toast.success("Demo deleted");
       router.push("/dashboard");
     } else {
       toast.error(result.error);
@@ -98,10 +88,9 @@ export default function ViewDemoPage() {
 
   const handleDuplicate = async () => {
     if (!demo || !token) return;
-
     const result = await duplicateDemo(demo.id, token);
     if (result.success) {
-      toast.success("Demo duplicated successfully");
+      toast.success("Demo duplicated");
       router.push("/dashboard");
     } else {
       toast.error(result.error);
@@ -110,7 +99,6 @@ export default function ViewDemoPage() {
 
   const handleToggleVisibility = async () => {
     if (!demo || !token) return;
-
     const result = await toggleDemoVisibility(demo.id, token);
     if (result.success) {
       toast.success(`Demo is now ${result.data.isPublic ? "public" : "private"}`);
@@ -122,328 +110,123 @@ export default function ViewDemoPage() {
 
   const copyShareLink = () => {
     if (!demo) return;
-    const url = `${window.location.origin}/demo/${demo.slug}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copied to clipboard! 🎉");
+    navigator.clipboard.writeText(`${window.location.origin}/demo/${demo.slug}`);
+    toast.success("Link copied");
   };
 
   const isOwner = demo?.userId === user?.id;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div 
-          className="text-center"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="inline-block h-12 w-12 rounded-full border-4 border-blue-200 border-t-blue-600 mb-4"
-          />
-          <motion.p 
-            className="text-lg font-semibold text-gray-700"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            Loading demo...
-          </motion.p>
-        </motion.div>
+      <div className="min-h-screen flex items-center justify-center bg-page">
+        <Loader2 className="size-5 animate-spin text-text-tertiary" />
       </div>
     );
   }
 
-  if (!demo) {
-    return null;
-  }
+  if (!demo) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-page">
       {/* Header */}
-      <motion.header 
-        className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                onClick={() => router.push(user ? "/dashboard" : "/")}
-                className="rounded-lg cursor-pointer"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to {user ? "Dashboard" : "Home"}
-              </Button>
-            </motion.div>
-
-            {isOwner && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button variant="outline" className="rounded-lg cursor-pointer">
-                      Actions
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </Button>
-                  </motion.div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}`)} className="cursor-pointer">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit Demo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/steps`)} className="cursor-pointer">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    Manage Steps
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleToggleVisibility} className="cursor-pointer">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Make {demo.isPublic ? 'Private' : 'Public'}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDuplicate} className="cursor-pointer">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={copyShareLink} className="cursor-pointer">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                    Copy Link
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => setDeleteDialogOpen(true)}
-                    className="text-red-600 cursor-pointer"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete Demo
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Main Content */}
-      <motion.main 
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Demo Header */}
-        <motion.div 
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-10 mb-6 sm:mb-8"
-          variants={itemVariants}
-        >
-          <div className="flex items-start justify-between mb-4 sm:mb-6">
-            <div className="flex-1">
-              <motion.h1 
-                className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 break-words"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {demo.title}
-              </motion.h1>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-                <motion.span 
-                  className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold ${demo.isPublic ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {demo.isPublic ? (
-                    <>
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Public
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Private
-                    </>
-                  )}
-                </motion.span>
-                <span className="hidden sm:inline font-medium">•</span>
-                <span className="font-medium text-xs sm:text-sm">Created {new Date(demo.createdAt).toLocaleDateString()}</span>
-                <span className="hidden sm:inline font-medium">•</span>
-                <span className="font-medium text-xs sm:text-sm">Updated {new Date(demo.updatedAt).toLocaleDateString()}</span>
-              </div>
+      <header className="h-14 border-b border-edge bg-surface sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={() => router.push(user ? "/dashboard" : "/")}>
+              <ArrowLeft className="size-4" />
+              {user ? "Dashboard" : "Home"}
+            </Button>
+            <Separator orientation="vertical" className="h-5" />
+            <div className="flex items-center gap-2">
+              <Zap className="size-3.5 text-text-tertiary" />
+              <span className="text-sm font-medium text-text-secondary truncate max-w-[200px]">{demo.title}</span>
             </div>
           </div>
 
-          {demo.description && (
-            <motion.p 
-              className="text-gray-700 text-sm sm:text-base lg:text-lg leading-relaxed break-words"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {demo.description}
-            </motion.p>
+          {isOwner && (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShareDialogOpen(true)}>
+                <Share2 className="size-4" />Share
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon-sm">
+                    <MoreHorizontal className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}`)} className="cursor-pointer">
+                    <Pencil className="size-4 mr-2 text-text-tertiary" />Edit Demo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${demo.id}/steps`)} className="cursor-pointer">
+                    <Layers className="size-4 mr-2 text-text-tertiary" />Manage Steps
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleToggleVisibility} className="cursor-pointer">
+                    {demo.isPublic ? <Lock className="size-4 mr-2 text-text-tertiary" /> : <Globe className="size-4 mr-2 text-text-tertiary" />}
+                    Make {demo.isPublic ? "private" : "public"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDuplicate} className="cursor-pointer">
+                    <Copy className="size-4 mr-2 text-text-tertiary" />Duplicate
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={copyShareLink} className="cursor-pointer">
+                    <Link2 className="size-4 mr-2 text-text-tertiary" />Copy link
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)} className="text-error cursor-pointer">
+                    <Trash2 className="size-4 mr-2" />Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
-        </motion.div>
+        </div>
+      </header>
 
-        {/* Stats */}
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
-          variants={containerVariants}
-        >
-            {[
-            { 
-              title: "Total Steps", 
-              value: demo.stepsCount, 
-              description: demo.stepsCount === 0 ? "No steps yet" : "Interactive steps",
-              icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-              color: "blue"
-            },
-            { 
-              title: "Demo Link", 
-              value: demo.slug, 
-              description: "Share this link",
-              icon: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
-              color: "purple",
-              isMono: false
-            },
-            { 
-              title: "Status", 
-              value: demo.stepsCount === 0 ? "Draft" : "Ready", 
-              description: demo.stepsCount === 0 ? "Add steps to publish" : "Demo is complete",
-              icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-              color: demo.stepsCount === 0 ? "amber" : "green"
-            }
-          ].map((stat, idx) => (
-            <motion.div
-              key={stat.title}
-              variants={itemVariants}
-              whileHover={{ y: -5, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Card className="rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow bg-white overflow-hidden cursor-default">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <CardDescription className="text-xs font-semibold uppercase tracking-wider text-gray-500">{stat.title}</CardDescription>
-                    <div className={`p-2 rounded-lg ${
-                      stat.color === 'blue' ? 'bg-blue-100' :
-                      stat.color === 'purple' ? 'bg-purple-100' :
-                      stat.color === 'green' ? 'bg-green-100' :
-                      'bg-amber-100'
-                    }`}>
-                      <svg className={`w-5 h-5 ${
-                        stat.color === 'blue' ? 'text-blue-600' :
-                        stat.color === 'purple' ? 'text-purple-600' :
-                        stat.color === 'green' ? 'text-green-600' :
-                        'text-amber-600'
-                      }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
-                      </svg>
-                    </div>
-                  </div>
-                  <CardTitle className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.isMono ? 'font-mono text-base sm:text-lg lg:text-xl' : ''} break-words`}>
-                    {stat.value}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {stat.title === "Demo Link" ? (
-                    <>
-                      <div className="flex items-center gap-2 text-xs text-gray-600 font-medium mb-3">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                        </svg>
-                        <span className="truncate">{stat.description}</span>
-                      </div>
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button 
-                          size="sm" 
-                          onClick={() => setShareDialogOpen(true)}
-                          className="h-8 text-xs rounded-lg w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                          </svg>
-                          Share & Embed
-                        </Button>
-                      </motion.div>
-                    </>
-                  ) : (
-                    <p className="text-xs text-gray-600 font-medium break-words">
-                      {stat.description}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        {/* Demo info */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant={demo.isPublic ? "default" : "secondary"} className="text-xs font-normal">
+              {demo.isPublic ? <><Globe className="size-3 mr-1" />Public</> : <><Lock className="size-3 mr-1" />Private</>}
+            </Badge>
+            <span className="text-xs text-text-tertiary flex items-center gap-1">
+              <Clock className="size-3" />
+              {new Date(demo.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </span>
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight mb-2">{demo.title}</h1>
+          {demo.description && (
+            <p className="text-text-secondary text-[15px] leading-relaxed max-w-2xl">{demo.description}</p>
+          )}
+        </div>
 
-        {/* Steps Section */}
-        <motion.div variants={itemVariants}>
-          <StepViewer steps={steps} />
-        </motion.div>
-      </motion.main>
+        <Separator className="mb-8" />
 
-      {/* Delete Confirmation Dialog */}
+        {/* Steps viewer */}
+        <StepViewer steps={steps.sort((a, b) => parseInt(a.position) - parseInt(b.position))} />
+      </main>
+
+      {/* Delete dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-2xl">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Delete demo</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your demo
-              and all associated steps and hotspots.
+              This will permanently delete this demo, all steps, and hotspots. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 rounded-lg cursor-pointer"
-            >
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-error hover:bg-error/90 text-white">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Share & Embed Dialog */}
       {demo && (
-        <ShareEmbedDialog
-          isOpen={shareDialogOpen}
-          onClose={() => setShareDialogOpen(false)}
-          demoSlug={demo.slug}
-          demoTitle={demo.title}
-        />
+        <ShareEmbedDialog isOpen={shareDialogOpen} onClose={() => setShareDialogOpen(false)} demoSlug={demo.slug} demoTitle={demo.title} />
       )}
     </div>
   );

@@ -11,6 +11,7 @@ import { loginUser } from "@/actions/user/user.action"
 import { useAuth } from "@/context/AuthContext"
 import { toast } from "sonner"
 import { redirect } from "next/navigation"
+import { Zap, ArrowRight, Loader2 } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -39,111 +40,113 @@ export default function LoginPage() {
       const response = await loginUser(loginUserData.email, loginUserData.password)
       if (response.success && response.data) {
         loginAuth(response.data.token, response.data.user)
-        toast.success(`User login successfully`)
+        toast.success("Signed in successfully")
       } else {
-        toast.error(!response.success ? response.error : `Failed to login user`)
-        console.error(!response.success ? response.error : `Failed to login user`)
+        toast.error(!response.success ? response.error : "Failed to sign in")
       }
     } catch (error) {
-      console.error('Login error:', error)
       toast.error(
         error instanceof Error
           ? error.message
-          : 'An unexpected error occurred during login. Please try again.'
+          : "An unexpected error occurred. Please try again."
       )
     }
   }
 
   return (
     <>
-      <div className="flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-            <p className="text-gray-600">Sign in to your account to continue</p>
-          </div>
+      {/* Left — Form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-[360px]">
+          <Link href="/" className="inline-flex items-center gap-2 mb-10">
+            <div className="size-8 rounded-lg bg-text-primary flex items-center justify-center">
+              <Zap className="size-4 text-text-inverted" />
+            </div>
+            <span className="text-base font-semibold tracking-tight">Stepwise</span>
+          </Link>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+          <h1 className="text-2xl font-semibold tracking-tight mb-1">Welcome back</h1>
+          <p className="text-sm text-text-secondary mb-8">Sign in to continue to your account</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
-                className="rounded-sm"
+                placeholder="you@company.com"
                 {...register("email")}
                 aria-invalid={!!errors.email}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-xs text-error">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="rounded-sm"
                 {...register("password")}
                 aria-invalid={!!errors.password}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">{errors.password.message}</p>
+                <p className="text-xs text-error">{errors.password.message}</p>
               )}
             </div>
 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-sm"
+              className="w-full"
             >
-              {isSubmitting ? "Signing in..." : "Sign in"}
+              {isSubmitting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="size-4 ml-1" />
+                </>
+              )}
             </Button>
           </form>
 
-          <div className="text-center text-sm">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+          <p className="text-center text-sm text-text-secondary mt-6">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-medium text-text-primary hover:underline underline-offset-4">
               Create one
             </Link>
-          </div>
+          </p>
         </div>
       </div>
 
-      <div className="hidden lg:flex items-center justify-center p-8 bg-linear-to-br from-blue-600 to-indigo-700">
-        <div className="max-w-md space-y-6 text-white">
-          <h2 className="text-4xl font-bold">Sign in to StepWise</h2>
-          <p className="text-lg text-blue-100">
-            Access your interactive demos and create engaging step-by-step guides
-            that captivate your audience.
+      {/* Right — Brand panel */}
+      <div className="hidden lg:flex flex-1 bg-text-primary items-center justify-center p-12">
+        <div className="max-w-md">
+          <h2 className="text-3xl font-semibold text-white tracking-tight mb-4">
+            Build interactive demos in minutes
+          </h2>
+          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
+            Transform static screenshots into engaging, clickable product
+            walkthroughs — no video recording needed.
           </p>
-          <div className="space-y-4 pt-4 text-white">
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+          <div className="space-y-4">
+            {[
+              "Create unlimited interactive demos",
+              "Add clickable hotspots and tooltips",
+              "Share with your team or make public",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <div className="size-5 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <svg className="size-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-neutral-300 text-sm">{item}</span>
               </div>
-              <p className="text-white">Create unlimited interactive demos</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-white">Add hotspots and tooltips</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 h-5 w-5 rounded-sm bg-white/20 flex items-center justify-center">
-                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-white">Share with your team or make public</p>
-            </div>
+            ))}
           </div>
         </div>
       </div>
