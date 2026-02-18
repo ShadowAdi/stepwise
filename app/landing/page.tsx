@@ -2,38 +2,18 @@ import Link from "next/link";
 
 const variants = [
   {
-    id: "v1",
-    name: "Bauhaus",
-    description: "Geometric shapes, primary colors, structured grids, sharp animations",
-    colors: ["#E60026", "#2454FF", "#FFCC00", "#1B1B1B"],
-    fonts: "Manrope + Source Sans 3",
-  },
-  {
     id: "v2",
     name: "Organic / Abstract",
-    description: "Fluid layouts, soft curves, natural forms, flowing transitions",
+    description: "Fluid layouts, soft curves, natural forms, flowing transitions, earthy palette",
     colors: ["#A45A52", "#E0AB76", "#9AB973", "#FAF0E6"],
     fonts: "Nunito + Lora",
   },
   {
-    id: "v3",
-    name: "Cyberpunk",
-    description: "Neon glows, glitch effects, dark backgrounds, futuristic scrolling",
-    colors: ["#DF00FF", "#0FFFFF", "#00009C", "#0A0A14"],
-    fonts: "Chakra Petch + Work Sans",
-  },
-  {
-    id: "v4",
-    name: "Neumorphism",
-    description: "Soft UI, extruded elements, subtle shadows, tactile feel",
-    colors: ["#EDEAE0", "#BC8F8F", "#9AB973", "#CDB280"],
-    fonts: "Raleway + Raleway",
-  },
-  {
     id: "v5",
-    name: "Modern Minimalist",
-    description: "Clean lines, ample white space, editorial typography, precise animations",
-    colors: ["#1B1B1B", "#FFFFFF", "#AFDBF5", "#808080"],
+    name: "Modern Minimalist — Awwwards Edition",
+    description:
+      "Falling text reveals, stacked card deck slider, editorial typography, counter loader, scroll-pinned animations",
+    colors: ["#0D0D0D", "#FFFFFF", "#AFDBF5", "#E8D5C0"],
     fonts: "Playfair Display + Source Sans 3",
   },
 ];
@@ -46,7 +26,7 @@ export default function LandingIndex() {
           Landing Page Variants
         </h1>
         <p className="text-lg text-text-secondary mb-16 max-w-2xl">
-          5 unique Awwwards-style landing pages for Stepwise, each with distinct design styles,
+          Two Awwwards-quality landing pages for Stepwise, each with distinct design styles,
           GSAP animations, and scroll-triggered effects.
         </p>
 
