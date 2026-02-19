@@ -1,11 +1,5 @@
-import Header from '@/components/landing/Header';
-import Hero from '@/components/landing/Hero';
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen">
-      <Header />
-      <Hero />
-    </main>
-  );
+  redirect("/landing/v5");
 }
