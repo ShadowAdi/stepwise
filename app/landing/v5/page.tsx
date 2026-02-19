@@ -8,7 +8,7 @@ import {
   MousePointerClick, Route, Blocks, Share2, BarChart3, Palette,
   Check, ArrowRight, Zap, Star, Quote,
 } from "lucide-react";
-import { features, steps, testimonials, pricingPlans, stats } from "../data";
+import { features, steps, testimonials, pricingPlans, stats } from "../../data";
 
 gsap.registerPlugin(ScrollTrigger);
 
