@@ -20,8 +20,8 @@ const C = {
   lightGrey: "#EBEBEB",
   grey: "#6B6B6B",
   muted: "#999",
-  accent: "#AFDBF5",
-  accentDark: "#4A9ED6",
+  accent: "#C7D2FE",
+  accentDark: "#4F46E5",
   warm: "#E8D5C0",
 };
 
