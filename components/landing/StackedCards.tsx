@@ -9,7 +9,7 @@ import { howItWorksCards } from "@/app/data";
 gsap.registerPlugin(ScrollTrigger);
 
 const CARD_TOP_OFFSET = 70;
-const STACK_GAP = 30;
+const STACK_GAP = 50;
 
 export default function StackedCards() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -35,21 +35,20 @@ export default function StackedCards() {
           pinSpacing: false,
         });
 
-        /* Scale down previous cards as the next one slides over — no brightness dim */
+        /* Scale down previous cards as the next one slides over */
         if (i < cards.length - 1) {
           const nextCard = cards[i + 1];
           const nextTopOffset = CARD_TOP_OFFSET + (i + 1) * STACK_GAP;
 
           gsap.to(card, {
-            scale: 0.93 - i * 0.015,
-            opacity: 0.6,
-            y: -10,
+            scale: 0.96,
+            filter: "brightness(0.88)",
             transformOrigin: "top center",
             scrollTrigger: {
               trigger: nextCard,
               start: "top bottom",
               end: `top top+=${nextTopOffset}`,
-              scrub: 0.3,
+              scrub: 1.5,
             },
           });
         }
