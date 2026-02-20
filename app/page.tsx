@@ -440,8 +440,6 @@ export default function Home() {
 
         {/* All content after stacked cards needs higher z-index to scroll over pinned cards */}
         <div className="relative" style={{ zIndex: 10, background: C.white }}>
-        {/* Spacer for clean separation from stacked cards */}
-        <div style={{ height: "8rem", background: C.white }} />
         {/* ═══ ROMAN NUMERAL ANIMATED SECTION ═══ */}
         <RomanNumeralSection />
 
