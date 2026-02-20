@@ -9,6 +9,7 @@ import {
   Check, ArrowRight, Zap, Star, Quote,
 } from "lucide-react";
 import { features, steps, testimonials, pricingPlans, stats } from "./data";
+import { SVGAnimationSection } from "@/components/landing/SvgHeroAnimation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -80,14 +81,10 @@ export default function Home() {
     if (!containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      /* ═══════════════════════════════════════
-         1. OPENING ANIMATION — Counter Loader
-         ═══════════════════════════════════════ */
       const openTl = gsap.timeline({
         onComplete: () => setLoaded(true),
       });
 
-      // Counter 000 → 100
       const counter = { val: 0 };
       openTl.to(counter, {
         val: 100,
@@ -102,31 +99,26 @@ export default function Home() {
         },
       });
 
-      // Progress bar fills
       openTl.to(
         ".loader-bar",
         { scaleX: 1, duration: 2, ease: "power2.inOut" },
         "<"
       );
 
-      // Wipe loader upward
       openTl.to(
         ".loader-overlay",
         { yPercent: -100, duration: 0.8, ease: "power3.inOut" },
         "+=0.3"
       );
 
-      // Reveal page
       openTl.set(".page-content", { visibility: "visible" }, "<0.2");
 
-      // Hero label
       openTl.from(
         ".hero-label",
         { y: 30, opacity: 0, duration: 0.4, ease: "power2.out" },
         "-=0.3"
       );
 
-      /* ─── Hero Falling Blocks ─── */
       openTl.to(".hero-block", {
         y: () => gsap.utils.random(600, 1000),
         x: () => gsap.utils.random(-80, 80),
@@ -159,11 +151,6 @@ export default function Home() {
         "-=0.2"
       );
 
-      /* ═══════════════════════════════════════
-         2. SCROLL-TRIGGERED ANIMATIONS
-         ═══════════════════════════════════════ */
-
-      // ── Stats
       gsap.from(".min-stat", {
         scrollTrigger: { trigger: ".min-stats", start: "top 85%" },
         y: 40,
@@ -173,7 +160,6 @@ export default function Home() {
         ease: "power2.out",
       });
 
-      // ── Section Falling Text (scroll-triggered)
       containerRef.current
         ?.querySelectorAll(".fall-trigger")
         .forEach((trigger) => {
@@ -195,7 +181,6 @@ export default function Home() {
           });
         });
 
-      // ── Line reveals
       gsap.utils.toArray<HTMLElement>(".line-reveal").forEach((el) => {
         gsap.from(el, {
           scrollTrigger: { trigger: el, start: "top 90%" },
@@ -206,7 +191,6 @@ export default function Home() {
         });
       });
 
-      // ── Features stagger
       gsap.from(".min-feature", {
         scrollTrigger: { trigger: ".min-features", start: "top 70%" },
         y: 60,
@@ -313,7 +297,6 @@ export default function Home() {
         overflowX: "hidden" as const,
       }}
     >
-      {/* ═══ LOADER OVERLAY ═══ */}
       <div
         className="loader-overlay fixed inset-0 z-[200] flex flex-col items-center justify-center"
         style={{ background: C.black }}
@@ -336,9 +319,7 @@ export default function Home() {
         </span>
       </div>
 
-      {/* ═══ PAGE CONTENT ═══ */}
       <div className="page-content" style={{ visibility: "hidden" }}>
-        {/* ═══ HEADER ═══ */}
         <header
           className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b"
           style={{ background: C.white + "EE", borderColor: C.lightGrey }}
@@ -385,7 +366,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* ═══ HERO ═══ */}
         <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full pt-20 pb-16">
             <div className="hero-label inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 border" style={{ borderColor: C.lightGrey, color: C.grey }}>
@@ -549,6 +529,8 @@ export default function Home() {
           </div>
         </section>
 
+        <SVGAnimationSection />
+
         {/* ═══ HOW IT WORKS ═══ */}
         <section
           id="how-it-works"
@@ -673,9 +655,8 @@ export default function Home() {
               {pricingPlans.map((plan, i) => (
                 <div
                   key={i}
-                  className={`min-price rounded-2xl p-8 flex flex-col border transition-shadow hover:shadow-lg ${
-                    plan.highlighted ? "scale-[1.03]" : ""
-                  }`}
+                  className={`min-price rounded-2xl p-8 flex flex-col border transition-shadow hover:shadow-lg ${plan.highlighted ? "scale-[1.03]" : ""
+                    }`}
                   style={{
                     background: plan.highlighted ? C.black : C.white,
                     color: plan.highlighted ? C.white : C.black,
