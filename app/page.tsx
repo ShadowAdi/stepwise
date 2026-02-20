@@ -9,7 +9,6 @@ import {
   Check, ArrowRight, Zap,
 } from "lucide-react";
 import { features, steps, testimonials, pricingPlans, stats } from "./data";
-import ProductMockup from "@/components/landing/ProductMockup";
 import TestimonialSwiper from "@/components/landing/TestimonialSwiper";
 import RomanNumeralSection from "@/components/landing/RomanNumeralSection";
 
