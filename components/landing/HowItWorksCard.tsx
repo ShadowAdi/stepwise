@@ -37,7 +37,9 @@ export default function HowItWorksCard({
         color: textColor,
         minHeight: "calc(100vh - 120px)",
         padding: "clamp(2rem, 4vw, 3rem)",
-        boxShadow: "0 -4px 30px rgba(0,0,0,0.06)",
+        boxShadow:
+          "0 -4px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.08)",
       }}
     >
       <div className="flex items-start justify-between">
@@ -47,6 +49,7 @@ export default function HowItWorksCard({
             fontWeight: 500,
             fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
             lineHeight: 1.2,
+            color:"white"
           }}
         >
           {title}

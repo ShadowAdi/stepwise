@@ -35,20 +35,21 @@ export default function StackedCards() {
           pinSpacing: false,
         });
 
-        /* Scale down + dim previous cards as the next one slides over */
+        /* Scale down previous cards as the next one slides over — no brightness dim */
         if (i < cards.length - 1) {
           const nextCard = cards[i + 1];
           const nextTopOffset = CARD_TOP_OFFSET + (i + 1) * STACK_GAP;
 
           gsap.to(card, {
-            scale: 0.95,
-            filter: "brightness(0.88)",
+            scale: 0.93 - i * 0.015,
+            opacity: 0.6,
+            y: -10,
             transformOrigin: "top center",
             scrollTrigger: {
               trigger: nextCard,
               start: "top bottom",
               end: `top top+=${nextTopOffset}`,
-              scrub: 0.5,
+              scrub: 0.3,
             },
           });
         }
@@ -59,7 +60,12 @@ export default function StackedCards() {
   }, []);
 
   return (
-    <section id="how-it-works" ref={sectionRef} className="relative">
+    <section
+      id="how-it-works"
+      ref={sectionRef}
+      className="relative"
+      style={{ zIndex: 1 }}
+    >
       {/* Section Header */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-24 md:pt-32 pb-16">
         <span
@@ -87,7 +93,7 @@ export default function StackedCards() {
       <div
         ref={cardsContainerRef}
         className="max-w-7xl mx-auto px-6 lg:px-8 relative"
-        style={{ minHeight: `${howItWorksCards.length * 100}vh` }}
+        style={{ minHeight: `${howItWorksCards.length * 80}vh` }}
       >
         {howItWorksCards.map((card, i) => (
           <div
@@ -95,18 +101,20 @@ export default function StackedCards() {
             ref={(el) => {
               cardRefs.current[i] = el;
             }}
-            className="will-change-transform"
             style={{
               zIndex: i + 1,
               transformOrigin: "top center",
               marginBottom:
-                i < howItWorksCards.length - 1 ? "25vh" : "0",
+                i < howItWorksCards.length - 1 ? "20vh" : "0",
             }}
           >
             <HowItWorksCard {...card} />
           </div>
         ))}
       </div>
+
+      {/* Bottom spacer to prevent merging with next section */}
+      <div style={{ height: "20vh" }} />
     </section>
   );
 }
