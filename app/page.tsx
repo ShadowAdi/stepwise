@@ -8,9 +8,10 @@ import {
   MousePointerClick, Route, Blocks, Share2, BarChart3, Palette,
   Check, ArrowRight, Zap,
 } from "lucide-react";
-import { features, steps, testimonials, pricingPlans, stats } from "./data";
+import { features, testimonials, pricingPlans, stats } from "./data";
 import TestimonialSwiper from "@/components/landing/TestimonialSwiper";
 import RomanNumeralSection from "@/components/landing/RomanNumeralSection";
+import StackedCards from "@/components/landing/StackedCards";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -201,15 +202,7 @@ export default function Home() {
         ease: "power2.out",
       });
 
-      // ── Steps
-      gsap.from(".min-step", {
-        scrollTrigger: { trigger: ".min-how", start: "top 75%" },
-        y: 60,
-        opacity: 0,
-        stagger: 0.15,
-        duration: 0.5,
-        ease: "power2.out",
-      });
+
 
       // ── Hero mockup parallax
       gsap.to(".hero-mockup", {
@@ -442,44 +435,8 @@ export default function Home() {
         </section>
 
 
-        {/* ═══ HOW IT WORKS ═══ */}
-        <section
-          id="how-it-works"
-          className="min-how py-24 md:py-32"
-          style={{ background: C.offWhite }}
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="fall-trigger mb-16">
-              <span className="text-xs uppercase tracking-[0.3em] mb-4 block" style={{ color: C.muted }}>
-                Process
-              </span>
-              <h2
-                className="text-4xl md:text-5xl lg:text-6xl tracking-tight max-w-2xl"
-                style={{ fontFamily: "'Playfair Display', serif", fontWeight: 500 }}
-              >
-                <FallingWords text="Three steps to your first demo" blockClass="section-block" blockColor={C.warm} />
-              </h2>
-            </div>
-            <div className="line-reveal h-px w-full mb-16" style={{ background: C.lightGrey }} />
-
-            <div className="grid md:grid-cols-3 gap-12">
-              {steps.map((step, i) => (
-                <div key={i} className="min-step">
-                  <div
-                    className="text-7xl font-light mb-6 opacity-15"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    {step.number}
-                  </div>
-                  <h3 className="text-xl font-semibold tracking-tight mb-3">{step.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: C.grey }}>
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* ═══ HOW IT WORKS — STACKED CARDS ═══ */}
+        <StackedCards />
 
         {/* ═══ ROMAN NUMERAL ANIMATED SECTION ═══ */}
         <RomanNumeralSection />

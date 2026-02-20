@@ -152,3 +152,46 @@ export const stats = [
   { value: "98%", label: "Satisfaction" },
   { value: "4.9/5", label: "Rating" },
 ];
+
+export const howItWorksCards = [
+  {
+    title: "Create account",
+    description:
+      "Sign up and set up your workspace in minutes. Start building interactive demos from day one.",
+    keyword: "CREATE",
+    icon: "UserPlus",
+    bgColor: "#F5F5F5",
+    textColor: "#1A1A1A",
+    bodyColor: "#5A5A5A",
+  },
+  {
+    title: "Create demo",
+    description:
+      "Build interactive product demos with ease. Upload screenshots and transform them into guided experiences.",
+    keyword: "DEMO",
+    icon: "Play",
+    bgColor: "#EFEFEF",
+    textColor: "#1A1A1A",
+    bodyColor: "#5A5A5A",
+  },
+  {
+    title: "Add steps & hotspots",
+    description:
+      "Guide users through key features with clickable hotspots, tooltips, and step-by-step navigation.",
+    keyword: "STEPS",
+    icon: "MousePointerClick",
+    bgColor: "#2D2D2D",
+    textColor: "#FFFFFF",
+    bodyColor: "#BBBBBB",
+  },
+  {
+    title: "Share with people",
+    description:
+      "Distribute your demos via link or embed them anywhere. Track engagement and optimize conversions.",
+    keyword: "SHARE",
+    icon: "Share2",
+    bgColor: "#E8E4D9",
+    textColor: "#1A1A1A",
+    bodyColor: "#5A5A5A",
+  },
+];
