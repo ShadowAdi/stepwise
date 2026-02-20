@@ -30,6 +30,11 @@
   --color-accent-blue-hover: #4338CA;
   --color-accent-blue-subtle: #EEF2FF;
 
+  /* ── Purple Section ── */
+  --color-purple-deep: #5B21B6;
+  --color-purple-mid: #6D28D9;
+  --color-purple-vivid: #7C3AED;
+
   /* ── Semantic ── */
   --color-success: #16a34a;
   --color-success-subtle: #f0fdf4;

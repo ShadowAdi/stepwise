@@ -6,10 +6,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   MousePointerClick, Route, Blocks, Share2, BarChart3, Palette,
-  Check, ArrowRight, Zap, Star, Quote,
+  Check, ArrowRight, Zap,
 } from "lucide-react";
 import { features, steps, testimonials, pricingPlans, stats } from "./data";
 import ProductMockup from "@/components/landing/ProductMockup";
+import TestimonialSwiper from "@/components/landing/TestimonialSwiper";
+import RomanNumeralSection from "@/components/landing/RomanNumeralSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -221,48 +223,7 @@ export default function Home() {
         },
       });
 
-      /* ═══════════════════════════════════════
-         3. TESTIMONIAL CARD DECK — Pinned Stack
-         ═══════════════════════════════════════ */
-      const cards = gsap.utils.toArray<HTMLElement>(".deck-card");
-      if (cards.length > 1) {
-        cards.forEach((card, i) => {
-          gsap.set(card, {
-            y: i * 12,
-            scale: 1 - i * 0.025,
-            zIndex: cards.length - i,
-            opacity: i < 3 ? 1 : 0,
-          });
-        });
-
-        const deckTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".deck-container",
-            start: "top 15%",
-            end: () => `+=${(cards.length - 1) * 350}`,
-            pin: true,
-            scrub: 0.5,
-          },
-        });
-
-        cards.slice(0, -1).forEach((card, i) => {
-          const dir = i % 2 === 0 ? 1 : -1;
-          deckTl.to(card, {
-            xPercent: dir * 110,
-            rotation: dir * 12,
-            opacity: 0,
-            duration: 1,
-            ease: "power2.inOut",
-          });
-          if (cards[i + 3]) {
-            deckTl.to(
-              cards[i + 3],
-              { opacity: 1, duration: 0.3 },
-              "<0.3"
-            );
-          }
-        });
-      }
+      /* Testimonial swiper is now handled by its own component */
 
       // ── Pricing
       gsap.from(".min-price", {
@@ -521,7 +482,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ TESTIMONIALS — STACKED CARD DECK ═══ */}
+        {/* ═══ ROMAN NUMERAL ANIMATED SECTION ═══ */}
+        <RomanNumeralSection />
+
+        {/* ═══ TESTIMONIALS — OVERLAPPING SWIPER ═══ */}
         <section className="py-24 md:py-32 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="fall-trigger mb-16">
@@ -538,49 +502,7 @@ export default function Home() {
             <div className="line-reveal h-px w-full mb-16" style={{ background: C.lightGrey }} />
           </div>
 
-          {/* Deck container – pinned during scroll */}
-          <div className="deck-container max-w-2xl mx-auto px-6 relative" style={{ minHeight: "420px" }}>
-            {testimonials.map((t, i) => (
-              <div
-                key={i}
-                className="deck-card absolute top-0 left-6 right-6 rounded-2xl p-8 md:p-10 border"
-                style={{
-                  background: C.white,
-                  borderColor: C.lightGrey,
-                  boxShadow: "0 4px 32px rgba(0,0,0,0.06)",
-                }}
-              >
-                <Quote className="w-8 h-8 mb-6 opacity-15" />
-                <p
-                  className="text-lg md:text-xl leading-relaxed mb-8"
-                  style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", color: C.black }}
-                >
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div className="flex items-center gap-4">
-                  <img
-                    src={`https://i.pravatar.cc/48?u=${t.avatar}`}
-                    alt={`${t.name} avatar`}
-                    className="w-12 h-12 rounded-full"
-                    width={48}
-                    height={48}
-                    loading="lazy"
-                  />
-                  <div>
-                    <div className="font-semibold text-sm">{t.name}</div>
-                    <div className="text-xs" style={{ color: C.muted }}>
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                  <div className="ml-auto flex gap-0.5">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="w-4 h-4 fill-current" style={{ color: C.warm }} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <TestimonialSwiper testimonials={testimonials} />
         </section>
 
         {/* ═══ PRICING ═══ */}
