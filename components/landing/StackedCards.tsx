@@ -42,7 +42,6 @@ export default function StackedCards() {
 
           gsap.to(card, {
             scale: 0.96,
-            filter: "brightness(0.88)",
             transformOrigin: "top center",
             scrollTrigger: {
               trigger: nextCard,
