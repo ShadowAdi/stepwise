@@ -12,7 +12,6 @@ import { features, steps, testimonials, pricingPlans, stats } from "./data";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Design Tokens ─── */
 const C = {
   black: "#0D0D0D",
   white: "#FFFFFF",
