@@ -43,7 +43,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+      <AlertDialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
             <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
