@@ -6,8 +6,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   MousePointerClick, Route, Blocks, Share2, BarChart3, Palette,
-  Check, ArrowRight, Zap,
+  Check, ArrowRight, Zap, LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { features, testimonials, pricingPlans, stats } from "./data";
 import TestimonialSwiper from "@/components/landing/TestimonialSwiper";
 import RomanNumeralSection from "@/components/landing/RomanNumeralSection";
@@ -78,6 +79,7 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
   const [, setLoaded] = useState(false);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -312,16 +314,31 @@ export default function Home() {
               </Link>
             </nav>
             <div className="flex items-center gap-3">
-              <Link href="/login" className="text-sm" style={{ color: C.grey }}>
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                className="px-5 py-2 text-sm font-medium text-white rounded-full transition-transform hover:scale-105"
-                style={{ background: C.black }}
-              >
-                Get Started
-              </Link>
+              {!authLoading && (
+                isAuthenticated ? (
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-white rounded-full transition-transform hover:scale-105"
+                    style={{ background: C.black }}
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/login" className="text-sm" style={{ color: C.grey }}>
+                      Log in
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="px-5 py-2 text-sm font-medium text-white rounded-full transition-transform hover:scale-105"
+                      style={{ background: C.black }}
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )
+              )}
             </div>
           </div>
         </header>
@@ -355,13 +372,26 @@ export default function Home() {
             </p>
 
             <div className="hero-ctas flex flex-wrap items-center gap-4 mb-20">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
-                style={{ background: C.black }}
-              >
-                Start Building <ArrowRight className="w-4 h-4" />
-              </Link>
+              {!authLoading && (
+                isAuthenticated ? (
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
+                    style={{ background: C.black }}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Go to Dashboard
+                  </Link>
+                ) : (
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
+                    style={{ background: C.black }}
+                  >
+                    Start Building <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )
+              )}
               <Link
                 href="/explore"
                 className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium rounded-full border transition-colors"
@@ -554,13 +584,24 @@ export default function Home() {
             <p className="text-lg mb-10 max-w-xl mx-auto" style={{ color: C.grey }}>
               Join 10,000+ teams creating interactive product experiences that convert.
             </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 px-10 py-4 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
-              style={{ background: C.black }}
-            >
-              Start Building — It&apos;s Free <ArrowRight className="w-4 h-4" />
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-10 py-4 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
+                style={{ background: C.black }}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 px-10 py-4 text-base font-medium text-white rounded-full transition-all hover:scale-105 hover:shadow-lg"
+                style={{ background: C.black }}
+              >
+                Start Building — It&apos;s Free <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
           </div>
         </section>
 

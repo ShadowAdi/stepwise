@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Quote, Star } from "lucide-react";
 
 /* ── Card colours – soft palette matching Stepwise brand ── */
@@ -27,16 +27,33 @@ interface Props {
 
 export default function TestimonialSwiper({ testimonials }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ containerH: 540, cardH: 450, cardW: 360 });
+
+  /* ── Responsive sizing ── */
+  useEffect(() => {
+    const update = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      if (vw < 480) {
+        setDims({ containerH: Math.min(440, vh * 0.72), cardH: Math.min(360, vh * 0.6), cardW: Math.min(300, vw * 0.85) });
+      } else if (vw < 768) {
+        setDims({ containerH: Math.min(500, vh * 0.75), cardH: Math.min(410, vh * 0.63), cardW: Math.min(340, vw * 0.80) });
+      } else {
+        setDims({ containerH: 540, cardH: 450, cardW: 360 });
+      }
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    /* Get only the card elements (skip the spacer) */
     const slides = [...wrapper.querySelectorAll<HTMLElement>("[data-slide]")];
     if (slides.length === 0) return;
 
-    /* ─── Physics state ─── */
     let current = 0;
     let target = 0;
     let isDragging = false;
@@ -52,8 +69,7 @@ export default function TestimonialSwiper({ testimonials }: Props) {
     const MOMENTUM_MULT = 12;
     const MOMENTUM_DECAY = 0.95;
 
-    /* ─── Helpers ─── */
-    const getGap = () => window.innerWidth * 0.02;
+    const getGap = () => window.innerWidth * 0.03;
 
     const getMaxScroll = () => {
       const slideW = slides[0].offsetWidth;
@@ -64,9 +80,8 @@ export default function TestimonialSwiper({ testimonials }: Props) {
     const clamp = (v: number, lo: number, hi: number) =>
       Math.min(hi, Math.max(lo, v));
 
-    /* ─── Per-frame render ─── */
     const render = () => {
-      const vwOff = window.innerWidth * 0.12;
+      const vwOff = window.innerWidth * 0.10;
 
       slides.forEach((slide, i) => {
         const slideLeft = slide.offsetLeft + current;
@@ -103,7 +118,6 @@ export default function TestimonialSwiper({ testimonials }: Props) {
       animId = requestAnimationFrame(tick);
     };
 
-    /* ─── Pointer handlers ─── */
     const onDown = (e: PointerEvent) => {
       isDragging = true;
       startX = e.clientX;
@@ -134,7 +148,6 @@ export default function TestimonialSwiper({ testimonials }: Props) {
       momentum = velocity * MOMENTUM_MULT;
     };
 
-    /* ─── Bind ─── */
     wrapper.addEventListener("pointerdown", onDown);
     wrapper.addEventListener("pointermove", onMove);
     wrapper.addEventListener("pointerup", onUp);
@@ -143,8 +156,7 @@ export default function TestimonialSwiper({ testimonials }: Props) {
     const block = (e: Event) => e.preventDefault();
     wrapper.addEventListener("selectstart", block);
     wrapper.style.userSelect = "none";
-    (wrapper.style as unknown as Record<string, string>).webkitUserSelect =
-      "none";
+    (wrapper.style as unknown as Record<string, string>).webkitUserSelect = "none";
     wrapper.style.touchAction = "pan-y";
 
     tick();
@@ -157,12 +169,12 @@ export default function TestimonialSwiper({ testimonials }: Props) {
       wrapper.removeEventListener("pointercancel", onUp);
       wrapper.removeEventListener("selectstart", block);
     };
-  }, [testimonials]);
+  }, [testimonials, dims]);
 
   return (
     <div
       className="w-full overflow-hidden relative"
-      style={{ height: "540px" }}
+      style={{ height: `${dims.containerH}px` }}
     >
       <div
         ref={wrapperRef}
@@ -175,10 +187,10 @@ export default function TestimonialSwiper({ testimonials }: Props) {
             data-slide
             className="shrink-0 pointer-events-none flex flex-col justify-between relative"
             style={{
-              width: "min(360px, 75vw)",
-              height: "450px",
-              marginRight: "2vw",
-              padding: "2rem",
+              width: `${dims.cardW}px`,
+              height: `${dims.cardH}px`,
+              marginRight: "3vw",
+              padding: "clamp(1.25rem, 3vw, 2rem)",
               borderRadius: "1.5rem",
               border: "2px solid rgba(0,0,0,0.08)",
               backgroundColor: CARD_COLORS[i % CARD_COLORS.length],
@@ -188,15 +200,16 @@ export default function TestimonialSwiper({ testimonials }: Props) {
             {/* Top — Quote */}
             <div>
               <Quote
-                className="w-7 h-7 mb-5"
+                className="w-6 h-6 mb-4"
                 style={{ opacity: 0.15, color: "#0D0D0D" }}
               />
               <p
-                className="text-lg md:text-xl leading-relaxed"
+                className="leading-relaxed"
                 style={{
                   fontFamily: "'Playfair Display', serif",
                   fontStyle: "italic",
                   color: "#0D0D0D",
+                  fontSize: "clamp(0.875rem, 2.5vw, 1.125rem)",
                 }}
               >
                 &ldquo;{t.quote}&rdquo;
@@ -204,13 +217,13 @@ export default function TestimonialSwiper({ testimonials }: Props) {
             </div>
 
             {/* Bottom — Author */}
-            <div className="flex items-center gap-3 mt-6">
+            <div className="flex items-center gap-3 mt-4">
               <img
                 src={`https://i.pravatar.cc/44?u=${t.avatar}`}
                 alt={`${t.name} avatar`}
-                className="w-11 h-11 rounded-full border-2 border-white/60"
-                width={44}
-                height={44}
+                className="w-10 h-10 rounded-full border-2 border-white/60 shrink-0"
+                width={40}
+                height={40}
                 loading="lazy"
                 draggable={false}
               />
@@ -232,7 +245,7 @@ export default function TestimonialSwiper({ testimonials }: Props) {
                 {[...Array(5)].map((_, j) => (
                   <Star
                     key={j}
-                    className="w-3.5 h-3.5 fill-current"
+                    className="w-3 h-3 fill-current"
                     style={{ color: "#E8D5C0" }}
                   />
                 ))}
@@ -244,39 +257,20 @@ export default function TestimonialSwiper({ testimonials }: Props) {
 
       {/* Drag hint */}
       <div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2 rounded-full text-xs font-medium select-none pointer-events-none"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium select-none pointer-events-none"
         style={{
           background: "rgba(0,0,0,0.05)",
           color: "rgba(0,0,0,0.35)",
           backdropFilter: "blur(4px)",
+          whiteSpace: "nowrap",
         }}
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M5 12h14" />
-          <path d="m12 5-7 7 7 7" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14" /><path d="m12 5-7 7 7 7" />
         </svg>
         <span>Drag to explore</span>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
         </svg>
       </div>
     </div>
