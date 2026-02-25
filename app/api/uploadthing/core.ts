@@ -4,7 +4,7 @@ const f = createUploadthing();
 
 export const ourFileRouter = {
   stepImageUploader: f({
-    image: { maxFileSize: "10MB", maxFileCount: 1 },
+    image: { maxFileSize: "8MB", maxFileCount: 1 },
   })
     .middleware(async () => {
       // Auth can be added here in the future
