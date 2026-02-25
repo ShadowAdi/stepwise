@@ -303,6 +303,13 @@ export default function Home() {
                   {item}
                 </a>
               ))}
+              <Link
+                href="/explore"
+                className="text-sm transition-colors"
+                style={{ color: C.grey }}
+              >
+                Explore Demos
+              </Link>
             </nav>
             <div className="flex items-center gap-3">
               <Link href="/login" className="text-sm" style={{ color: C.grey }}>
@@ -356,11 +363,11 @@ export default function Home() {
                 Start Building <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="#how-it-works"
+                href="/explore"
                 className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium rounded-full border transition-colors"
                 style={{ borderColor: C.lightGrey, color: C.black }}
               >
-                See How It Works
+                Explore Demos
               </Link>
             </div>
 
