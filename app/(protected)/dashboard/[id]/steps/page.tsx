@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from "@/actions/steps/steps.action";
 import { StepResponse } from "@/types/step";
-import { uploadStepImageClient, deleteStepImageClient } from "@/lib/upload-client";
+import { deleteStepImage } from "@/actions/upload/upload.action";
+import { useUploadThing } from "@/lib/uploadthing";
 import { HotspotEditor } from "@/components/dashboard/HotspotEditor";
 import {
   AlertDialog,
@@ -70,6 +71,8 @@ const StepsPage = () => {
     resolver: zodResolver(stepSchema),
   });
 
+  const { startUpload, isUploading } = useUploadThing("stepImageUploader");
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast.error("Please login to access this page");
@@ -95,15 +98,16 @@ const StepsPage = () => {
     if (!file) return;
     try {
       toast.loading("Uploading…");
-      if (uploadedImage && oldImageUrl) await deleteStepImageClient(oldImageUrl);
-      const result = await uploadStepImageClient(file);
-      if (result.success) {
-        setUploadedImage(result.data.publicUrl);
+      // Delete old image if replacing
+      if (uploadedImage && oldImageUrl) await deleteStepImage(oldImageUrl);
+      const uploaded = await startUpload([file]);
+      if (uploaded && uploaded[0]?.ufsUrl) {
+        setUploadedImage(uploaded[0].ufsUrl);
         toast.dismiss();
         toast.success("Image uploaded");
       } else {
         toast.dismiss();
-        toast.error(result.error || "Upload failed");
+        toast.error("Upload failed");
       }
     } catch {
       toast.dismiss();
@@ -121,7 +125,7 @@ const StepsPage = () => {
         if (result.success && result.data) {
           setSteps(prev => prev.map(s => s.id === editingStepId ? result.data! : s));
           if (selectedStep?.id === editingStepId) setSelectedStep(result.data);
-          if (oldImageUrl && oldImageUrl !== uploadedImage) await deleteStepImageClient(oldImageUrl);
+          if (oldImageUrl && oldImageUrl !== uploadedImage) await deleteStepImage(oldImageUrl);
           toast.success("Step updated");
           setIsEditMode(false);
           setEditingStepId(null);
@@ -155,7 +159,7 @@ const StepsPage = () => {
     if (!stepToDelete || !token) return;
     const result = await deleteStep(stepToDelete.id, token);
     if (result.success) {
-      await deleteStepImageClient(stepToDelete.imageUrl);
+      await deleteStepImage(stepToDelete.imageUrl);
       setSteps(prev => prev.filter(s => s.id !== stepToDelete.id));
       if (selectedStep?.id === stepToDelete.id) setSelectedStep(null);
       toast.success("Step deleted");
@@ -385,8 +389,8 @@ const StepsPage = () => {
                   <Separator />
 
                   <div className="flex gap-2">
-                    <Button type="submit" size="sm" className="flex-1" disabled={isSubmitting}>
-                      {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : isEditMode ? "Update step" : "Create step"}
+                  <Button type="submit" size="sm" className="flex-1" disabled={isSubmitting || isUploading}>
+                      {isUploading ? <><Loader2 className="size-4 animate-spin" />Uploading…</> : isSubmitting ? <Loader2 className="size-4 animate-spin" /> : isEditMode ? "Update step" : "Create step"}
                     </Button>
                     {isEditMode && (
                       <Button type="button" variant="outline" size="sm" onClick={cancelEdit}>
