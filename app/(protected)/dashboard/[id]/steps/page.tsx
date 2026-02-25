@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { createStep, getAllSteps, deleteStep, updateStep, changeStepOrder } from "@/actions/steps/steps.action";
 import { StepResponse } from "@/types/step";
-import { uploadStepImage, deleteStepImage } from "@/actions/upload/upload.action";
+import { uploadStepImageClient, deleteStepImageClient } from "@/lib/upload-client";
 import { HotspotEditor } from "@/components/dashboard/HotspotEditor";
 import {
   AlertDialog,
@@ -95,11 +95,9 @@ const StepsPage = () => {
     if (!file) return;
     try {
       toast.loading("Uploading…");
-      if (uploadedImage && oldImageUrl) await deleteStepImage(oldImageUrl);
-      const formData = new FormData();
-      formData.append("file", file);
-      const result = await uploadStepImage(formData);
-      if (result.success && result.data) {
+      if (uploadedImage && oldImageUrl) await deleteStepImageClient(oldImageUrl);
+      const result = await uploadStepImageClient(file);
+      if (result.success) {
         setUploadedImage(result.data.publicUrl);
         toast.dismiss();
         toast.success("Image uploaded");
@@ -123,7 +121,7 @@ const StepsPage = () => {
         if (result.success && result.data) {
           setSteps(prev => prev.map(s => s.id === editingStepId ? result.data! : s));
           if (selectedStep?.id === editingStepId) setSelectedStep(result.data);
-          if (oldImageUrl && oldImageUrl !== uploadedImage) await deleteStepImage(oldImageUrl);
+          if (oldImageUrl && oldImageUrl !== uploadedImage) await deleteStepImageClient(oldImageUrl);
           toast.success("Step updated");
           setIsEditMode(false);
           setEditingStepId(null);
@@ -157,7 +155,7 @@ const StepsPage = () => {
     if (!stepToDelete || !token) return;
     const result = await deleteStep(stepToDelete.id, token);
     if (result.success) {
-      await deleteStepImage(stepToDelete.imageUrl);
+      await deleteStepImageClient(stepToDelete.imageUrl);
       setSteps(prev => prev.filter(s => s.id !== stepToDelete.id));
       if (selectedStep?.id === stepToDelete.id) setSelectedStep(null);
       toast.success("Step deleted");
