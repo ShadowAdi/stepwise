@@ -183,6 +183,29 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
     setIsSaving(false);
   };
 
+  const hasAutoNavigation = () => {
+    if (!allSteps || allSteps.length <= 1) return false;
+    
+    const sortedSteps = [...allSteps].sort((a, b) => parseInt(a.position) - parseInt(b.position));
+    const currentStepIndex = sortedSteps.findIndex(s => s.id === step.id);
+    
+    if (currentStepIndex === -1) return false;
+    
+    const prevStep = currentStepIndex === 0 
+      ? sortedSteps[sortedSteps.length - 1] 
+      : sortedSteps[currentStepIndex - 1];
+    
+    const nextStep = currentStepIndex === sortedSteps.length - 1 
+      ? sortedSteps[0] 
+      : sortedSteps[currentStepIndex + 1];
+    
+    // Check if hotspots linking to both prev and next steps exist
+    const hasPrevLink = hotspots.some(h => h.targetStepId === prevStep.id);
+    const hasNextLink = hotspots.some(h => h.targetStepId === nextStep.id);
+    
+    return hasPrevLink && hasNextLink;
+  };
+
   const createAutoNavigationHotspots = async () => {
     if (!allSteps || allSteps.length <= 1) {
       toast.error('Need at least 2 steps for auto-navigation');
@@ -340,8 +363,9 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
             variant="outline"
             size="sm"
             onClick={createAutoNavigationHotspots}
-            disabled={isCreatingAutoNav || !allSteps || allSteps.length <= 1}
+            disabled={isCreatingAutoNav || !allSteps || allSteps.length <= 1 || hasAutoNavigation()}
             className="cursor-pointer text-xs"
+            title={hasAutoNavigation() ? "Auto navigation already exists" : "Create previous/next navigation"}
           >
             {isCreatingAutoNav ? (
               <>
@@ -353,7 +377,7 @@ export const HotspotEditor = ({ step, token, onHotspotsChange, allSteps = [] }: 
                 <span className="hidden sm:inline">Creating...</span>
               </>
             ) : (
-              <>🎠 <span className="hidden sm:inline">Auto Nav</span></>
+              <>🎠 <span className="hidden sm:inline">{hasAutoNavigation() ? 'Nav Added' : 'Auto Nav'}</span></>
             )}
           </Button>
           <Button
