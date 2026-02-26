@@ -43,7 +43,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto">
+      <AlertDialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto overflow-x-hidden">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
             <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,7 +125,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                   <Input
                     value={shareUrl || 'Loading...'}
                     readOnly
-                    className="flex-1 font-mono text-xs sm:text-sm bg-gray-50"
+                    className="flex-1 font-mono text-xs sm:text-sm bg-gray-50 overflow-hidden text-ellipsis"
                   />
                   <Button
                     onClick={() => shareUrl && copyToClipboard(shareUrl, 'Link copied to clipboard! 🎉')}
@@ -154,9 +154,9 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <h5 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{demoTitle}</h5>
-                      <p className="text-xs sm:text-sm text-gray-500 truncate">{shareUrl}</p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate break-all">{shareUrl}</p>
                       <p className="text-xs text-gray-400 mt-1">Interactive product demo</p>
                     </div>
                   </div>
@@ -273,8 +273,8 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
               {/* Embed Code */}
               <div>
                 <Label className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 block">Embed Code</Label>
-                <div className="relative">
-                  <pre className="bg-gray-900 text-gray-100 p-3 sm:p-4 pr-20 sm:pr-24 rounded-lg text-[10px] sm:text-xs font-mono overflow-x-auto border border-gray-700 max-h-32 whitespace-pre-wrap break-all">
+                <div className="relative overflow-hidden">
+                  <pre className="bg-gray-900 text-gray-100 p-3 sm:p-4 pr-20 sm:pr-24 rounded-lg text-[10px] sm:text-xs font-mono overflow-x-hidden border border-gray-700 max-h-32 whitespace-pre-wrap break-all">
                     {embedCode || 'Loading...'}
                   </pre>
                   <Button
