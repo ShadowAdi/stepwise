@@ -129,25 +129,28 @@ export default function ViewDemoPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Header */}
-      <header className="h-14 border-b border-edge bg-surface sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => router.push(user ? "/dashboard" : "/")}>
+      <header className="h-14 border-b border-edge bg-surface/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <Button variant="ghost" size="sm" onClick={() => router.push(user ? "/dashboard" : "/")} className="shrink-0">
               <ArrowLeft className="size-4" />
-              {user ? "Dashboard" : "Home"}
+              <span className="hidden sm:inline">{user ? "Dashboard" : "Home"}</span>
             </Button>
-            <Separator orientation="vertical" className="h-5" />
-            <div className="flex items-center gap-2">
-              <Zap className="size-3.5 text-text-tertiary" />
-              <span className="text-sm font-medium text-text-secondary truncate max-w-[200px]">{demo.title}</span>
+            <Separator orientation="vertical" className="h-5 hidden sm:block" />
+            <div className="flex items-center gap-2 min-w-0">
+              <Zap className="size-3.5 text-text-tertiary shrink-0" />
+              <span className="text-sm font-medium text-text-secondary truncate">{demo.title}</span>
             </div>
           </div>
 
-          {isOwner && (
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            {demo.isPublic && (
               <Button variant="outline" size="sm" onClick={() => setShareDialogOpen(true)}>
-                <Share2 className="size-4" />Share
+                <Share2 className="size-4" />
+                <span className="hidden sm:inline">Share</span>
               </Button>
+            )}
+            {isOwner && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon-sm">
@@ -178,8 +181,8 @@ export default function ViewDemoPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
