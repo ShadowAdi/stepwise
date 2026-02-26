@@ -125,7 +125,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                   <Input
                     value={shareUrl || 'Loading...'}
                     readOnly
-                    className="flex-1 font-mono text-xs sm:text-sm bg-gray-50 overflow-hidden text-ellipsis"
+                    className="flex-1 font-mono text-xs sm:text-sm bg-gray-50"
                   />
                   <Button
                     onClick={() => shareUrl && copyToClipboard(shareUrl, 'Link copied to clipboard! 🎉')}
