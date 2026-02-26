@@ -43,7 +43,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto overflow-x-hidden">
+      <AlertDialogContent className="max-w-3xl max-h-[95vh] overflow-y-auto overflow-x-hidden">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
             <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
         <div className="flex gap-1 sm:gap-2 border-b border-gray-200 mb-4 sm:mb-6">
           <button
             onClick={() => setActiveTab('share')}
-            className={`px-3 sm:px-6 py-2 sm:py-3 font-semibold text-xs sm:text-sm transition-all relative ${
+            className={`px-2 sm:px-3 py-2 sm:py-3 font-semibold text-xs sm:text-sm transition-all relative ${
               activeTab === 'share' 
                 ? 'text-blue-600' 
                 : 'text-gray-500 hover:text-gray-700'
@@ -84,7 +84,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
           </button>
           <button
             onClick={() => setActiveTab('embed')}
-            className={`px-3 sm:px-6 py-2 sm:py-3 font-semibold text-xs sm:text-sm transition-all relative ${
+            className={`px-2 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm transition-all relative ${
               activeTab === 'embed' 
                 ? 'text-blue-600' 
                 : 'text-gray-500 hover:text-gray-700'
@@ -118,7 +118,6 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              {/* Share URL */}
               <div>
                 <Label className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 block">Public Demo URL</Label>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -144,8 +143,7 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 </p>
               </div>
 
-              {/* Preview - Hidden on mobile */}
-              <div className="hidden sm:block bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+              <div className="hidden sm:block bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
                 <h4 className="text-sm font-semibold mb-3 text-gray-900">Link Preview</h4>
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
                   <div className="flex items-start gap-3">
@@ -163,7 +161,6 @@ export const ShareEmbedDialog = ({ isOpen, onClose, demoSlug, demoTitle }: Share
                 </div>
               </div>
 
-              {/* Social Share Options */}
               <div>
                 <Label className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 block">Share on Social Media</Label>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
